@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<openerp>
+  <data>
+
+
+    <template id="mgmt_actions" name="Management actions">
+        <div class="mgmt-actions" groups="website_cms.cms_manager">
+            <div id="website_published_button">
+                <t t-call="website.publish_management">
+                  <t t-set="object" t-value="context"/>
+                  <t t-set="publish_edit" t-value="True"/>
+                  <t t-set="action" t-value="''"/>
+                </t>
+            </div>
+        </div>
+    </template>
+
+    <template id="section_default" name="Section default">
+        <t t-call="website.layout">
+            <t t-call="website_cms.mgmt_actions" />
+            <h1 id="context-name" itemprop="name" t-field="context.name" />
+            <div id="context-description"
+                 itemprop="description"
+                 t-field="context.description"
+                 class="oe_structure mt16"
+                 />
+        </t>
+    </template>
+
+    <!-- enable view for cms -->
+    <record id="website_cms.section_default" model="ir.ui.view">
+      <field name="cms_view" eval="1" />
+    </record>
+
+    <template id="section_default_custom"
+              name="Section custom 1"
+              primary="True"
+              inherit_id="website_cms.section_default">
+
+            <xpath expr="//h1" position="after">
+                <h1>CUSTOM VIEW</h1>
+            </xpath>
+
+    </template>
+
+    <template id="page_default" name="Page default">
+        <t t-call="website.layout">
+            <t t-call="website_cms.mgmt_actions" />
+            <h1 id="context_name" itemprop="name" t-field="context.name" />
+            <div id="context_description"
+                 itemprop="description"
+                 t-field="context.description"
+                 class="oe_structure mt16"
+                 />
+        </t>
+    </template>
+
+    <!-- enable view for cms -->
+    <record id="website_cms.page_default" model="ir.ui.view">
+      <field name="cms_view" eval="1" />
+    </record>
+
+    <template id="section_default_custom"
+              name="Page custom 1"
+              primary="True"
+              inherit_id="website_cms.page_default">
+
+            <xpath expr="//h1" position="after">
+                <h1>CUSTOM VIEW</h1>
+            </xpath>
+
+    </template>
+
+
+  </data>
+</openerp>
+
+

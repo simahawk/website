@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<openerp>
+  <data>
+
+<record id="cms_section_form" model="ir.ui.view">
+  <field name="name">CMS Section form</field>
+  <field name="model">cms.section</field>
+  <field name="arch" type="xml">
+    <form string="Section">
+
+      <div class="oe_button_box" name="button_box">
+        <button
+          class="oe_stat_button"
+          name="website_publish_button"
+          type="object" icon="fa-globe">
+            <field name="website_published" widget="website_button"/>
+        </button>
+      </div>
+
+      <group name="main" colspan="4">
+        <field name="name" colspan="2" />
+        <field name="parent_id" colspan="2" />
+        <field name="description" />
+      </group>
+
+      <notebook>
+        <page name="view" string="View">
+          <group name="main_view">
+            <field name="view_item" />
+            <field name="view_id"
+                   options="{'no_open': True, 'no_create': True}" />
+            <field name="page_view_id" />
+          </group>
+        </page>
+
+        <page name="children" string="Children">
+          <field name="children_ids" nolabel="1">
+            <tree>
+              <field name="name" />
+              <field name="nav_include" />
+              <field name="website_published" />
+            </tree>
+          </field>
+        </page>
+
+        <page name="pages" string="Pages">
+          <group name="main_view">
+            <field name="page_type_id"
+                   options="{'no_open': True, 'no_create': True}" />
+          </group>
+          <field name="page_ids" nolabel="1"
+                 context="{'default_parent_id': active_id,'default_view_id':page_view_id,'default_type_id':page_type_id}">
+            <tree>
+              <field name="name" />
+              <field name="type_id" />
+              <field name="website_published" />
+            </tree>
+          </field>
+        </page>
+
+        <page name="attachments" string="Attachments">
+          <field name="attachment_ids" nolabel="1">
+            <tree>
+              <field name="name" />
+            </tree>
+          </field>
+        </page>
+
+        <page name="listing" string="Listing">
+          <group name="main_listing">
+            <separator string="Types to list" colspan="4" />
+            <field name="list_types_ids" nolabel="1" />
+          </group>
+        </page>
+
+        <page name="misc" string="Misc">
+          <group name="nav">
+            <field name="nav_include" />
+          </group>
+        </page>
+
+      </notebook>
+
+    </form>
+  </field>
+</record>
+
+
+  </data>
+</openerp>
+
+
