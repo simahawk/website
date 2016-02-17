@@ -8,6 +8,7 @@
   <field name="res_model">cms.section</field>
   <field name="view_type">form</field>
   <field name="view_mode">tree,form</field>
+  <field name="context">{'search_default_only_main':1}</field>
   <field name="help" type="html">
     <p class="oe_view_nocontent_create">
         Click to manage CMS sections.

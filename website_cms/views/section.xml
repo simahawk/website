@@ -37,6 +37,7 @@
         <page name="children" string="Children">
           <field name="children_ids" nolabel="1">
             <tree>
+              <field name="sequence" widget="handle" />
               <field name="name" />
               <field name="nav_include" />
               <field name="website_published" />
@@ -52,6 +53,7 @@
           <field name="page_ids" nolabel="1"
                  context="{'default_parent_id': active_id,'default_view_id':page_view_id,'default_type_id':page_type_id}">
             <tree>
+              <field name="sequence" widget="handle" />
               <field name="name" />
               <field name="type_id" />
               <field name="website_published" />
@@ -83,6 +85,66 @@
       </notebook>
 
     </form>
+  </field>
+</record>
+
+
+<record id="cms_section_tree" model="ir.ui.view">
+  <field name="name">CMS Section tree</field>
+  <field name="model">cms.section</field>
+  <field name="arch" type="xml">
+    <tree string="Sections">
+      <field name="sequence" widget="handle" />
+      <field name="name" />
+      <field name="parent_id" />
+      <field name="view_item" />
+      <field name="view_id" />
+      <field name="nav_include" />
+      <field name="website_published" />
+    </tree>
+  </field>
+</record>
+
+
+<record id="section_search" model="ir.ui.view" >
+  <field name="name">CMS Section search</field>
+  <field name="model">cms.section</field>
+  <field name="arch" type="xml">
+
+    <search string="Search section">
+      <field name="parent_id" />
+      <field name="nav_include" />
+      <field name="website_published" />
+
+      <group expand="0" string="Filter">
+
+        <filter
+          name="only_main"
+          string="Only main"
+          icon="terp-personal"
+          domain="[('parent_id','=',False)]"
+          />
+
+      </group>
+
+      <group expand="0" string="Group By">
+
+        <filter
+          string='Parent'
+          domain="[]"
+          context="{'group_by' : 'parent_id'}"
+          />
+
+        <filter
+          string='Published'
+          domain="[]"
+          context="{'group_by' : 'website_published'}"
+          />
+
+      </group>
+
+    </search>
+
   </field>
 </record>
 
