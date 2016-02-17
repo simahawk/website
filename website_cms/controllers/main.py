@@ -24,33 +24,22 @@ class ContextAwareMixin(object):
         Essentially we need 2 items: ``context`` and ``parent``.
 
         The context by default is the item being traversed.
-        In other words: if you traverse the path to a section
-        that section will be the context.
-
-        You can override this behavior by setting a `view_item`.
-        If this field is valued the default context for the view
-        will become the linked item (usually a page contained in the section).
+        In other words: if you traverse the path to a page
+        that page will be the context.
 
         The parent - if any - is always the parent of the item being traversed.
 
         For instance:
 
-            /cms/section-1/section-2
+            /cms/page-1/page-2
 
-        in this case, `section-2` is the context and `section-1` the parent.
-        If `section-1` contains a page `page-1`
-        and this page has been linked via `view_item` field,
-        the context will be `page-1`.
+        in this case, `page-2` is the context and `page-1` the parent.
         """
 
         parent = None
         if hasattr(context, 'parent_id'):
             # get the parent if any
             parent = context.parent_id
-
-        if hasattr(context, 'view_item') and context.view_item:
-            # get view item as context if any
-            context = context.view_item
 
         values = {
             'context': context,

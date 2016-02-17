@@ -101,7 +101,7 @@ class CMSPage(models.Model):
 
     @api.model
     def build_public_url(self, item):
-        """Walk trough section hierarchy to build its public URL."""
+        """Walk trough page hierarchy to build its public URL."""
         current = item
         parts = [slug(current), ]
         while current.parent_id:
@@ -120,7 +120,7 @@ class CMSPage(models.Model):
 
     @api.model
     def build_hierarchy_name(self, item):
-        """Walk trough section hierarchy to build its nested name."""
+        """Walk trough page hierarchy to build its nested name."""
         current = item
         parts = [current.name, ]
         while current.parent_id:
@@ -136,6 +136,14 @@ class CMSPage(models.Model):
         for item in self:
             res.append((item.id, self.build_hierarchy_name(item)))
         return res
+
+    @api.model
+    def get_ancestor(self, item):
+        """Walk trough page hierarchy to find root ancestor."""
+        current = item
+        while current.parent_id:
+            current = current.parent_id
+        return current
 
 
 class CMSPageType(models.Model):
