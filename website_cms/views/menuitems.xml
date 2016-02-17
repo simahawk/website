@@ -3,9 +3,9 @@
 <openerp>
   <data>
 
-<record model="ir.actions.act_window" id="action_cms_sections">
-  <field name="name">Sections</field>
-  <field name="res_model">cms.section</field>
+<record model="ir.actions.act_window" id="action_cms_pages">
+  <field name="name">Pages</field>
+  <field name="res_model">cms.page</field>
   <field name="view_type">form</field>
   <field name="view_mode">tree,form</field>
   <field name="context">{'search_default_only_main':1}</field>
@@ -16,31 +16,11 @@
   </field>
 </record>
 
-<record model="ir.actions.act_window" id="action_cms_pages">
-  <field name="name">Pages</field>
-  <field name="res_model">cms.page</field>
-  <field name="view_type">form</field>
-  <field name="view_mode">tree,form</field>
-  <field name="help" type="html">
-    <p class="oe_view_nocontent_create">
-        Click to manage CMS pages.
-    </p>
-  </field>
-</record>
-
 
 <menuitem
   name="CMS Admin"
   id="menu_cms_root"
-  sequence="20"
-  />
-
-<menuitem
-  id="menu_sections"
-  parent="menu_cms_root"
-  name="Sections"
-  action="action_cms_sections"
-  sequence="10"
+  sequence="100"
   />
 
 <menuitem
@@ -48,7 +28,7 @@
   parent="menu_cms_root"
   name="Pages"
   action="action_cms_pages"
-  sequence="20"
+  sequence="10"
   />
 
   </data>

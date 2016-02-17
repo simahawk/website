@@ -16,33 +16,6 @@
         </div>
     </template>
 
-    <template id="section_default" name="Section default">
-        <t t-call="website.layout">
-            <t t-call="website_cms.mgmt_actions" />
-            <h1 id="context-name" itemprop="name" t-field="context.name" />
-            <div id="context-description"
-                 itemprop="description"
-                 t-field="context.description"
-                 class="oe_structure mt16"
-                 />
-        </t>
-    </template>
-
-    <!-- enable view for cms -->
-    <record id="website_cms.section_default" model="ir.ui.view">
-      <field name="cms_view" eval="1" />
-    </record>
-
-    <template id="section_default_custom"
-              name="Section custom 1"
-              primary="True"
-              inherit_id="website_cms.section_default">
-
-            <xpath expr="//h1" position="after">
-                <h1>CUSTOM VIEW</h1>
-            </xpath>
-
-    </template>
 
     <template id="page_default" name="Page default">
         <t t-call="website.layout">

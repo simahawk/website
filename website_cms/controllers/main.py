@@ -19,12 +19,43 @@ class ContextAwareMixin(object):
         return template
 
     def get_render_values(self, context, **post):
-        """Retrieve rendering values."""
+        """Retrieve rendering values.
+
+        Essentially we need 2 items: ``context`` and ``parent``.
+
+        The context by default is the item being traversed.
+        In other words: if you traverse the path to a section
+        that section will be the context.
+
+        You can override this behavior by setting a `view_item`.
+        If this field is valued the default context for the view
+        will become the linked item (usually a page contained in the section).
+
+        The parent - if any - is always the parent of the item being traversed.
+
+        For instance:
+
+            /cms/section-1/section-2
+
+        in this case, `section-2` is the context and `section-1` the parent.
+        If `section-1` contains a page `page-1`
+        and this page has been linked via `view_item` field,
+        the context will be `page-1`.
+        """
+
+        parent = None
+        if hasattr(context, 'parent_id'):
+            # get the parent if any
+            parent = context.parent_id
+
+        if hasattr(context, 'view_item') and context.view_item:
+            # get view item as context if any
+            context = context.view_item
+
         values = {
             'context': context,
+            'parent': parent,
         }
-        if hasattr(context, 'parent_id'):
-            values['parent'] = context.parent_id
         return values
 
     def render(self, context, **post):
@@ -34,19 +65,6 @@ class ContextAwareMixin(object):
             self.get_template(context, **post),
             self.get_render_values(context, **post),
         )
-
-
-class SectionController(http.Controller, ContextAwareMixin):
-
-    template = 'website_cms.section_default'
-
-    @http.route([
-        '/cms/<model("cms.section"):context>',
-        '/cms/<path:path>/<model("cms.section"):context>',
-    ], type='http', auth='public', website=True)
-    def section(self, context, path=None, **post):
-        """Handle a `section` route."""
-        return self.render(context, **post)
 
 
 class PageController(http.Controller, ContextAwareMixin):

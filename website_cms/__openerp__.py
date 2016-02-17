@@ -27,10 +27,9 @@
         "data/page_types.xml",
         # views
         "views/menuitems.xml",
-        "views/section.xml",
         "views/page.xml",
         # templates
-        "templates/section.xml",
+        "templates/page_view.xml",
     ],
     "demo": [
     ],
