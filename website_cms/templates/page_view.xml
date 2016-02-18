@@ -4,47 +4,83 @@
   <data>
 
 
-    <template id="mgmt_actions" name="Management actions">
-        <div class="mgmt-actions" groups="website_cms.cms_manager">
-            <div id="website_published_button">
-                <t t-call="website.publish_management">
-                  <t t-set="object" t-value="context"/>
-                  <t t-set="publish_edit" t-value="True"/>
-                  <t t-set="action" t-value="''"/>
-                </t>
-            </div>
+<template id="mgmt_actions" name="Management actions">
+    <div class="mgmt-actions" groups="website_cms.cms_manager">
+        <div id="website_published_button">
+            <t t-call="website.publish_management">
+              <t t-set="object" t-value="context"/>
+              <t t-set="publish_edit" t-value="True"/>
+              <t t-set="action" t-value="''"/>
+            </t>
         </div>
-    </template>
+    </div>
+</template>
 
 
-    <template id="page_default" name="Page default">
-        <t t-call="website.layout">
-            <t t-call="website_cms.mgmt_actions" />
-            <h1 id="context_name" itemprop="name" t-field="context.name" />
-            <div id="context_description"
-                 itemprop="description"
-                 t-field="context.description"
-                 class="oe_structure mt16"
-                 />
-        </t>
-    </template>
+<template id="page_default" name="Page default">
+    <t t-call="website.layout">
+      <t t-call="website_cms.page_default_content" />
+    </t>
+</template>
 
-    <!-- enable view for cms -->
-    <record id="website_cms.page_default" model="ir.ui.view">
-      <field name="cms_view" eval="1" />
-    </record>
 
-    <template id="section_default_custom"
-              name="Page custom 1"
-              primary="True"
-              inherit_id="website_cms.page_default">
+<template id="page_default_content" name="Page default content">
+  <t t-call="website_cms.mgmt_actions" />
 
-            <xpath expr="//h1" position="after">
-                <h1>CUSTOM VIEW</h1>
-            </xpath>
+  <div t-if="not edit_translations"
+       id="context_description"
+       class="o_editable"
+       t-att-data-oe-model="context._name"
+       t-att-data-oe-field="'description'"
+       t-att-data-oe-id="context.id"
+       data-oe-type="html">
 
-    </template>
+    <t t-if="not context.description">
+      <p>Fill in your description here...</p>
+    </t>
+    <t t-if="context.description">
+      <t t-raw="context.description" />
+    </t>
 
+  </div>
+  <div t-if="edit_translations" id="context_description">
+    <t t-raw="context.description" />
+  </div>
+
+  <div t-if="not edit_translations"
+       id="context_body"
+       class="o_editable"
+       t-att-data-oe-model="context._name"
+       t-att-data-oe-field="'body'"
+       t-att-data-oe-id="context.id"
+       data-oe-type="html">
+
+    <t t-if="not context.body">
+      <p>Fill in your content here...</p>
+    </t>
+    <t t-if="context.body">
+      <t t-raw="context.body" />
+    </t>
+  </div>
+
+  <div t-if="edit_translations" id="context_body">
+    <t t-raw="context.body" />
+  </div>
+
+  <t t-if="False">
+    ### are we sure we cannot simply get above stuff like this???
+    <div id="context_body"
+         t-field="context.body"
+         class="oe_structure"
+         contenteditable="true"
+         />
+   </t>
+</template>
+
+<!-- enable view for cms -->
+<record id="website_cms.page_default" model="ir.ui.view">
+  <field name="cms_view" eval="1" />
+</record>
 
   </data>
 </openerp>

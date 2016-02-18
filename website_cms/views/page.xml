@@ -18,27 +18,32 @@
         </button>
       </div>
 
-      <group name="main_1" colspan="2">
-        <field name="name" colspan="2" />
-        <field name="parent_id" colspan="2" />
+      <group name="main_1" col="2">
+        <field name="name" colspan="1" />
+        <field name="parent_id" colspan="1" />
       </group>
-      <group name="main_2" colspan="2">
-        <field name="view_id" colspan="2"
+      <group name="main_2" col="2">
+        <field name="view_id" colspan="1"
                options="{'no_open': True, 'no_create': True}" />
-        <field name="nav_include" colspan="2" />
+        <field name="type_id" colspan="1" />
+        <field name="nav_include" colspan="1" />
       </group>
 
       <notebook>
         <page name="children" string="Children">
-          <field name="sub_page_type_id"
-                 options="{'no_open': True, 'no_create': True}" />
-          <field name="sub_page_view_id"
-                 options="{'no_open': True, 'no_create': True}" />
-          <field name="children_ids" nolabel="1">
+          <group name="children_defaults" col="2">
+            <field name="sub_page_type_id" colspan="1"
+                   options="{'no_open': True, 'no_create': True}" />
+            <field name="sub_page_view_id" colspan="1"
+                   options="{'no_open': True, 'no_create': True}" />
+          </group>
+          <field name="children_ids" nolabel="1"
+                 context="{'default_type_id':sub_page_type_id,'default_view_id':sub_page_view_id}">
             <tree>
               <field name="sequence" widget="handle" />
               <field name="name" />
               <field name="type_id" />
+              <field name="view_id" />
               <field name="nav_include" />
               <field name="website_published" />
             </tree>
@@ -64,6 +69,13 @@
           <group name="html">
             <field name="description" />
             <field name="body" readonly="1" widget="html" />
+          </group>
+        </page>
+
+        <page name="sidebar-stuff" string="Sidebar content">
+          <group name="sidebar">
+            <field name="sidebar_view_ids" />
+            <field name="sidebar_content" widget="html" />
           </group>
         </page>
 

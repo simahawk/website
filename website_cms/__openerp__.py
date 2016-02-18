@@ -30,6 +30,7 @@
         "views/page.xml",
         # templates
         "templates/page_view.xml",
+        "templates/sidebar_view.xml",
     ],
     "demo": [
     ],

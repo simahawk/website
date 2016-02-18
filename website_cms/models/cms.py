@@ -19,8 +19,11 @@ def to_slug(item):
 
 VIEW_DOMAIN = [
     ('type', '=', 'qweb'),
-    # limit views to "website_cms." prefix
     ('cms_view', '=', True),
+]
+SIDEBAR_VIEW_DOMAIN = [
+    ('type', '=', 'qweb'),
+    ('cms_sidebar', '=', True),
 ]
 
 
@@ -52,7 +55,6 @@ class CMSPage(models.Model):
         translate=html_translate,
         sanitize=False
     )
-
     parent_id = fields.Many2one(
         string='Parent',
         comodel_name='cms.page'
@@ -96,6 +98,24 @@ class CMSPage(models.Model):
         help=(u"You can select types of page to be used "
               u"in `listing` views."),
     )
+    sidebar_view_ids = fields.Many2many(
+        string='Sidebar views',
+        comodel_name='ir.ui.view',
+        help=(u"Each view linked here will be rendered in the sidebar."),
+        domain=lambda self: SIDEBAR_VIEW_DOMAIN,
+    )
+    sidebar_content = fields.Html(
+        'Sidebar HTML',
+        translate=html_translate,
+        sanitize=False,
+        help=(u"Each template that enables customization in the sidebar "
+              u"must use this field to store content."),
+    )
+    # sidebar_inherit = fields.Boolean(
+    #     'Sidebar Inherit',
+    #     help=(u"If turned on, you'll see the same sidebar "
+    #           u"into each contained page."),
+    # )
     nav_include = fields.Boolean(
         'Nav include',
         default=True,
@@ -149,12 +169,48 @@ class CMSPage(models.Model):
     #     return res
 
     @api.model
-    def get_ancestor(self, item):
+    def get_root(self, item=None):
         """Walk trough page hierarchy to find root ancestor."""
-        current = item
+        current = item or self
         while current.parent_id:
             current = current.parent_id
         return current
+
+    @api.model
+    def get_listing(self, published=True, nav=None, type_ids=None,
+                    order=None, item=None):
+        """Return items to be listed.
+
+        Tweak filtering by:
+
+        `published` to show published/unpublished items
+        `nav` to show nav-included items
+        `type_ids` to limit listing to specific page types
+        `order` to override ordering by sequence
+
+        By default filter w/ `list_types_ids` if valued.
+
+        """
+        item = item or self
+        search_args = [
+            ('parent_id', '=', item.id),
+            ('website_published', '=', published),
+        ]
+        if nav is not None:
+            search_args.append(('nav_include', '=', nav))
+
+        type_ids = type_ids or (
+            item.list_types_ids and item.list_types_ids._ids)
+        if type_ids:
+            search_args.append(
+                ('type_id', 'in', type_ids)
+            )
+        order = order or 'sequence asc'
+        pages = item.search(
+            search_args,
+            order=order
+        )
+        return pages
 
 
 class CMSPageType(models.Model):
