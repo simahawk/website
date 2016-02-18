@@ -1,12 +1,20 @@
 # -*- coding: utf-8 -*-
 
+# pylint: disable=E0401
+# pylint: disable=W0212
+
 from openerp import models
 from openerp import fields
 from openerp import api
-from openerp.tools.translate import _
+# from openerp.tools.translate import _
 from openerp.tools.translate import html_translate
 from openerp.addons.website.models.website import slug
 # from openerp.addons.website.models.website import unslug
+
+
+def to_slug(item):
+    value = (item.id, item.name)
+    return slug(value)
 
 
 VIEW_DOMAIN = [
@@ -17,7 +25,8 @@ VIEW_DOMAIN = [
 
 
 class CMSPage(models.Model):
-    """Model of a CMS page. """
+    """Model of a CMS page."""
+
     _name = 'cms.page'
     _description = 'CMS page'
     _order = 'sequence, id'
@@ -103,9 +112,9 @@ class CMSPage(models.Model):
     def build_public_url(self, item):
         """Walk trough page hierarchy to build its public URL."""
         current = item
-        parts = [slug(current), ]
+        parts = [to_slug(current), ]
         while current.parent_id:
-            parts.insert(0, slug(current.parent_id))
+            parts.insert(0, to_slug(current.parent_id))
             current = current.parent_id
         public_url = '/cms/' + '/'.join(parts)
         return public_url
@@ -128,14 +137,16 @@ class CMSPage(models.Model):
             current = current.parent_id
         return ' / '.join(parts)
 
-    @api.multi
-    def name_get(self):
-        """Format displayed name."""
-        # use name and/or country group name
-        res = []
-        for item in self:
-            res.append((item.id, self.build_hierarchy_name(item)))
-        return res
+    # XXX: temp disabled because this is used for slugs too
+    # repeating each hierarchy item in the url
+    # @api.multi
+    # def name_get(self):
+    #     """Format displayed name."""
+    #     # use name and/or country group name
+    #     res = []
+    #     for item in self:
+    #         res.append((item.id, self.build_hierarchy_name(item)))
+    #     return res
 
     @api.model
     def get_ancestor(self, item):
@@ -147,7 +158,8 @@ class CMSPage(models.Model):
 
 
 class CMSPageType(models.Model):
-    """Model of a CMS page type. """
+    """Model of a CMS page type."""
+
     _name = 'cms.page.type'
     _description = 'CMS page type'
 
