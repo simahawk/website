@@ -50,10 +50,26 @@
           </field>
         </page>
 
+        <page name="related-pages" string="Related pages">
+          <field name="related_ids" nolabel="1">
+            <tree>
+              <field name="name" />
+              <field name="type_id" />
+              <field name="nav_include" />
+              <field name="website_published" />
+            </tree>
+          </field>
+        </page>
+
         <page name="attachments" string="Attachments">
           <field name="attachment_ids" nolabel="1">
             <tree>
               <field name="name" />
+              <field name="datas_fname" />
+              <field name="type" />
+              <field name="mimetype" />
+              <field name="create_uid" />
+              <field name="create_date" />
             </tree>
           </field>
         </page>

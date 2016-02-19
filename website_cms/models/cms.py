@@ -64,6 +64,13 @@ class CMSPage(models.Model):
         inverse_name='parent_id',
         comodel_name='cms.page'
     )
+    related_ids = fields.Many2many(
+        string='Related pages',
+        comodel_name='cms.page',
+        relation='cms_page_related_rel',
+        column1='from_id',
+        column2='to_id',
+    )
     attachment_ids = fields.One2many(
         string='Attachments',
         inverse_name='res_id',
