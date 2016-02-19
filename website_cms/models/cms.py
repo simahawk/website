@@ -194,8 +194,9 @@ class CMSPage(models.Model):
         item = item or self
         search_args = [
             ('parent_id', '=', item.id),
-            ('website_published', '=', published),
         ]
+        if published is not None:
+            search_args.append(('website_published', '=', published))
         if nav is not None:
             search_args.append(('nav_include', '=', nav))
 
