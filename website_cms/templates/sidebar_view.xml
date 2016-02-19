@@ -32,30 +32,32 @@
 
 
 <template id="sidebar_rendering" name="CMS sidebar rendering">
-  <t t-if="context.sidebar_view_ids">
-    <t t-foreach="context.sidebar_view_ids" t-as="view">
-      <t t-call="#{ view.key }" />
+  <t t-if="context">
+    <t t-if="context.sidebar_view_ids">
+      <t t-foreach="context.sidebar_view_ids" t-as="view">
+        <t t-call="#{ view.key }" />
+      </t>
     </t>
-  </t>
 
-  <t t-if="request.debug">
-    <div class="debug" style="color:orange !important">
-      <div class="alert alert-warning" role="alert">
-        <h4>Debug mode ON</h4>
-        <br />
-        <t t-if="context.sidebar_view_ids">
-          <h5>Views assigned here on context</h5>
-          <ul>
-            <t t-foreach="context.sidebar_view_ids" t-as="view">
-              <li><small t-esc="view.key" /></li>
-            </t>
-          </ul>
-        </t>
-        <t t-if="not context.sidebar_view_ids">
-          <h5>No view assigned here on context</h5>
-        </t>
+    <t t-if="request.debug">
+      <div class="debug" style="color:orange !important">
+        <div class="alert alert-warning" role="alert">
+          <h4>Debug mode ON</h4>
+          <br />
+          <t t-if="context.sidebar_view_ids">
+            <h5>Views assigned here on context</h5>
+            <ul>
+              <t t-foreach="context.sidebar_view_ids" t-as="view">
+                <li><small t-esc="view.key" /></li>
+              </t>
+            </ul>
+          </t>
+          <t t-if="not context.sidebar_view_ids">
+            <h5>No view assigned here on context</h5>
+          </t>
+        </div>
       </div>
-    </div>
+    </t>
   </t>
 </template>
 
