@@ -125,7 +125,7 @@ class CMSPage(models.Model):
     # )
     nav_include = fields.Boolean(
         'Nav include',
-        default=True,
+        default=False,
         help=(u"Decide if this item "
               u"should be included in main navigation."),
     )

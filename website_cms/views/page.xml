@@ -84,7 +84,7 @@
         <page name="html-stuff" string="Page content">
           <group name="html">
             <field name="description" />
-            <field name="body" readonly="1" widget="html" />
+            <field name="body" widget="html" />
           </group>
         </page>
 
