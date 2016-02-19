@@ -65,5 +65,5 @@ class PageController(http.Controller, ContextAwareMixin):
         '/cms/<path:path>/<model("cms.page"):context>',
     ], type='http', auth='public', website=True)
     def page(self, context, path=None, **post):
-        """Handle a `section` route."""
+        """Handle a `page` route."""
         return self.render(context, **post)
