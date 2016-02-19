@@ -38,7 +38,7 @@
                    options="{'no_open': True, 'no_create': True}" />
           </group>
           <field name="children_ids" nolabel="1"
-                 context="{'default_type_id':sub_page_type_id,'default_view_id':sub_page_view_id}">
+                 context="{'default_type_id':sub_page_type_id,'default_view_id':sub_page_view_id,'default_parent_id':active_id}">
             <tree>
               <field name="sequence" widget="handle" />
               <field name="name" />
