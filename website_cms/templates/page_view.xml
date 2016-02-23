@@ -8,7 +8,7 @@
     <div class="mgmt-actions" groups="website_cms.cms_manager">
         <div id="website_published_button">
             <t t-call="website.publish_management">
-              <t t-set="object" t-value="context"/>
+              <t t-set="object" t-value="main_object"/>
               <t t-set="publish_edit" t-value="True"/>
               <t t-set="action" t-value="''"/>
             </t>
@@ -28,49 +28,49 @@
   <t t-call="website_cms.mgmt_actions" />
 
   <div t-if="not edit_translations"
-       id="context_description"
+       id="main_object_description"
        class="o_editable"
-       t-att-data-oe-model="context._name"
+       t-att-data-oe-model="main_object._name"
        t-att-data-oe-field="'description'"
-       t-att-data-oe-id="context.id"
+       t-att-data-oe-id="main_object.id"
        data-oe-type="html">
 
-    <t t-if="not context.description">
+    <t t-if="not main_object.description">
       <p>Fill in your description here...</p>
     </t>
-    <t t-if="context.description">
-      <t t-raw="context.description" />
+    <t t-if="main_object.description">
+      <t t-raw="main_object.description" />
     </t>
 
   </div>
-  <div t-if="edit_translations" id="context_description">
-    <t t-raw="context.description" />
+  <div t-if="edit_translations" id="object_description">
+    <t t-raw="main_object.description" />
   </div>
 
   <div t-if="not edit_translations"
-       id="context_body"
+       id="object_body"
        class="o_editable"
-       t-att-data-oe-model="context._name"
+       t-att-data-oe-model="main_object._name"
        t-att-data-oe-field="'body'"
-       t-att-data-oe-id="context.id"
+       t-att-data-oe-id="main_object.id"
        data-oe-type="html">
 
-    <t t-if="not context.body">
+    <t t-if="not main_object.body">
       <p>Fill in your content here...</p>
     </t>
-    <t t-if="context.body">
-      <t t-raw="context.body" />
+    <t t-if="main_object.body">
+      <t t-raw="main_object.body" />
     </t>
   </div>
 
-  <div t-if="edit_translations" id="context_body">
-    <t t-raw="context.body" />
+  <div t-if="edit_translations" id="object_body">
+    <t t-raw="main_object.body" />
   </div>
 
   <t t-if="False">
     ### are we sure we cannot simply get above stuff like this???
-    <div id="context_body"
-         t-field="context.body"
+    <div id="object_body"
+         t-field="main_object.body"
          class="oe_structure"
          contenteditable="true"
          />
