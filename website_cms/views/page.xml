@@ -16,6 +16,12 @@
           type="object" icon="fa-globe">
             <field name="website_published" widget="website_button"/>
         </button>
+        <button
+          class="oe_stat_button"
+          name="update_published"
+          type="object" icon="fa-globe"
+          string="Publish / Unpublish now!">
+        </button>
       </div>
 
       <group name="main_1" col="2">

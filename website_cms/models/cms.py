@@ -195,6 +195,11 @@ class CMSPage(models.Model):
             current = current.parent_id
         return current
 
+    @api.multi
+    def update_published(self):
+        """Publish / Unpublish this page right away."""
+        self.write({'website_published': not self.website_published})
+
     @api.model
     def get_listing(self, published=True, nav=None, type_ids=None,
                     order=None, item=None):
