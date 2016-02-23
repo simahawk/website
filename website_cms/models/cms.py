@@ -128,6 +128,12 @@ class CMSPage(models.Model):
         help=(u"Decide if this item "
               u"should be included in main navigation."),
     )
+    hierarchy = fields.Char(
+        string='Hierarchy',
+        compute='_compute_hierarchy',
+        readonly=True,
+        store=True,
+    )
 
     @api.model
     def _default_type(self):
@@ -153,6 +159,11 @@ class CMSPage(models.Model):
             res[item.id] = self.build_public_url(item)
         return res
 
+    @api.one
+    @api.depends('parent_id')
+    def _compute_hierarchy(self):
+        self.hierarchy = self.build_hierarchy_name(self)
+
     @api.model
     def build_hierarchy_name(self, item):
         """Walk trough page hierarchy to build its nested name."""
@@ -161,6 +172,8 @@ class CMSPage(models.Model):
         while current.parent_id:
             parts.insert(0, current.parent_id.name)
             current = current.parent_id
+        # prefix w/ a slash meaning root
+        parts.insert(0, '')
         return ' / '.join(parts)
 
     # XXX: temp disabled because this is used for slugs too

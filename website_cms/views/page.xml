@@ -108,6 +108,7 @@
   <field name="arch" type="xml">
     <tree string="Pages">
       <field name="sequence" widget="handle" />
+      <field name="hierarchy" />
       <field name="name" />
       <field name="view_id" />
       <field name="nav_include" />
@@ -125,6 +126,7 @@
     <search string="Search page">
       <field name="name" />
       <field name="parent_id" />
+      <field name="type_id" />
       <field name="nav_include" />
       <field name="website_published" />
 
