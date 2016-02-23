@@ -65,7 +65,6 @@ class WebsiteOrderableMixin(models.AbstractModel):
         return last.sequence + 1
 
 
-
 class WebsiteCoreMetadataMixin(models.AbstractModel):
     _name = "website.coremetadata.mixin"
     _description = "A mixin for exposing core metadata fields"
@@ -92,3 +91,27 @@ class WebsiteCoreMetadataMixin(models.AbstractModel):
         select=True,
         readonly=True,
     )
+
+
+class WebsitePortletMixin(models.AbstractModel):
+    _name = "website.portlet.mixin"
+    _description = "A mixin for adding portlets feature"
+
+    left_portlet_ids = fields.One2many(
+        string='Left portlets',
+        comodel_name='cms.portlet.assignment',
+        inverse_name='res_id',
+    )
+    right_portlet_ids = fields.One2many(
+        string='Right portlets',
+        comodel_name='cms.portlet.assignment',
+        inverse_name='res_id',
+    )
+
+    @api.model
+    def get_portlets(self, side):
+        res = []
+        items = getattr(self, side + '_portlet_ids')
+        for item in items:
+            res.append(item.portlet_type_id)
+        return res

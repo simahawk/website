@@ -15,3 +15,7 @@ class IRUIView(models.Model):
         'CMS sidebar?',
         help=u"This view will be available as a CMS sidebar view."
     )
+    cms_portlet = fields.Boolean(
+        'CMS portlet?',
+        help=u"This view will be available as a CMS portlet view."
+    )

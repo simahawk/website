@@ -95,6 +95,12 @@
           </group>
         </page>
 
+        <page name="portlets-stuff" string="Portlets">
+          <group name="portlets-left">
+            <field name="left_portlet_ids" />
+          </group>
+        </page>
+
       </notebook>
 
     </form>

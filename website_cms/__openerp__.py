@@ -28,9 +28,11 @@
         # views
         "views/menuitems.xml",
         "views/page.xml",
+        "views/portlet.xml",
         # templates
         "templates/page_view.xml",
         "templates/sidebar_view.xml",
+        "templates/portlet_view.xml",
     ],
     "demo": [
     ],

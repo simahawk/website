@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+
+<template id="left_portlets" name="CMS left portlet renderer">
+
+    <t t-if="context">
+      <t t-foreach="context.get_portlets('left')" t-as="portlet">
+        <t t-call="#{ portlet.template }" />
+      </t>
+    </t>
+
+
+</template>
+
+
+<template id="right_portlets" name="CMS right portlet renderer">
+
+  <t t-if="context">
+    <t t-foreach="context.get_portlets('right')" t-as="portlet">
+      <t t-call="#{ portlet.template }" />
+    </t>
+  </t>
+
+</template>
+
+
+<template id="portlet_static_editable" name="CMS editable static content">
+
+  <t t-if="False"># Make `sidebar_content` editable ;)</t>
+
+  <h3 t-field="portlet.name"
+       class="portlet portlet_name"
+       contenteditable="true"
+       />
+  <div t-field="portlet.content"
+       class="portlet portlet_content oe_structure"
+       contenteditable="true"
+       />
+
+</template>
+
+<!-- enable view for cms sidebar -->
+<record id="website_cms.portlet_static_editable" model="ir.ui.view">
+  <field name="cms_portlet" eval="1" />
+</record>
+
+
+    </data>
+</openerp>

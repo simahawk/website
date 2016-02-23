@@ -38,6 +38,7 @@ class CMSPage(models.Model):
                 'website.published.mixin',
                 'website.image.mixin',
                 'website.orderable.mixin',
+                'website.portlet.mixin',
                 'website.coremetadata.mixin']
 
     name = fields.Char(
