@@ -46,10 +46,10 @@ class WebsiteImageMixin(models.AbstractModel):
         )
 
 
-
 class WebsiteOrderableMixin(models.AbstractModel):
     _name = "website.orderable.mixin"
     _description = "A mixin for providing sorting features"
+    _order = 'sequence, id'
 
     sequence = fields.Integer(
         'Sequence',

@@ -13,7 +13,7 @@ class ContextAwareMixin(object):
         """Retrieve rendering template."""
         template = self.template
         if hasattr(context, 'view_id') and context.view_id:
-            template = context.view_id.get_view_xmlid()[0]
+            template = context.view_id.key
         if not template:
             raise NotImplementedError("You must provide a template!")
         return template
