@@ -4,5 +4,6 @@
 
 from . import website_mixins
 from . import website
+from . import website_menu
 from . import ir_ui_view
 from . import cms

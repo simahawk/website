@@ -33,8 +33,7 @@ class CMSPage(models.Model):
     _name = 'cms.page'
     _description = 'CMS page'
     _order = 'sequence, id'
-    _inherit = ['mail.thread',
-                'website.seo.metadata',
+    _inherit = ['website.seo.metadata',
                 'website.published.mixin',
                 'website.image.mixin',
                 'website.orderable.mixin',

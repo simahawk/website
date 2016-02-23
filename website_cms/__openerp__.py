@@ -28,6 +28,7 @@
         # views
         "views/menuitems.xml",
         "views/page.xml",
+        'views/website_menu.xml',
         # templates
         "templates/page_view.xml",
         "templates/sidebar_view.xml",
