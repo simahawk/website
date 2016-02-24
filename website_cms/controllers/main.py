@@ -10,18 +10,19 @@ class ContextAwareMixin(object):
     The `context` in this case is what odoo calls `main_object`.
     """
 
-    template = ''
+    # default template
+    _template = ''
 
-    def get_template(self, main_object, **post):
+    def get_template(self, main_object, **kw):
         """Retrieve rendering template."""
-        template = self.template
+        template = self._template
         if hasattr(main_object, 'view_id') and main_object.view_id:
             template = main_object.view_id.key
         if not template:
             raise NotImplementedError("You must provide a template!")
         return template
 
-    def get_render_values(self, main_object, **post):
+    def get_render_values(self, main_object, **kw):
         """Retrieve rendering values.
 
         Essentially we need 2 items: ``main_object`` and ``parent``.
@@ -50,23 +51,25 @@ class ContextAwareMixin(object):
         }
         return values
 
-    def render(self, main_object, **post):
-        """Retrieve parameters for rendering and render view template.
-        """
+    def render(self, main_object, **kw):
+        """Retrieve parameters for rendering and render view template."""
         return request.website.render(
-            self.get_template(main_object, **post),
-            self.get_render_values(main_object, **post),
+            self.get_template(main_object, **kw),
+            self.get_render_values(main_object, **kw),
         )
 
 
 class PageController(http.Controller, ContextAwareMixin):
+    """CMS page controller."""
 
     template = 'website_cms.page_default'
 
+    # `secure_model` is a new converter that check security
+    # see `website.security.mixin`.
     @http.route([
-        '/cms/<model("cms.page"):main_object>',
-        '/cms/<path:path>/<model("cms.page"):main_object>',
+        '/cms/<secure_model("cms.page"):main_object>',
+        '/cms/<path:path>/<secure_model("cms.page"):main_object>',
     ], type='http', auth='public', website=True)
-    def page(self, main_object, path=None, **post):
+    def page(self, main_object, path=None, **kw):
         """Handle a `page` route."""
-        return self.render(main_object, **post)
+        return self.render(main_object, **kw)

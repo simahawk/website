@@ -37,7 +37,8 @@ class CMSPage(models.Model):
                 'website.published.mixin',
                 'website.image.mixin',
                 'website.orderable.mixin',
-                'website.coremetadata.mixin']
+                'website.coremetadata.mixin',
+                'website.security.mixin']
 
     name = fields.Char(
         'Name',
@@ -201,7 +202,8 @@ class CMSPage(models.Model):
         self.write({'website_published': not self.website_published})
 
     @api.model
-    def get_listing(self, published=True, nav=None, type_ids=None,
+    def get_listing(self, published=True,
+                    nav=None, type_ids=None,
                     order=None, item=None):
         """Return items to be listed.
 

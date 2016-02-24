@@ -101,6 +101,12 @@
           </group>
         </page>
 
+        <page name="permission-stuff" string="Permissions">
+          <group name="permissions">
+            <field name="view_group_ids" />
+          </group>
+        </page>
+
       </notebook>
 
     </form>
