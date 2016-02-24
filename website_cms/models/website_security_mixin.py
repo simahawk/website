@@ -119,11 +119,19 @@ class WebsiteSecurityMixin(models.AbstractModel):
         w/ a relation to real objects and put our hands
         inside rules computation, and keep user settings
         in sync with rules, etc, etc.
+        The computation of the domain for a rule,
+        applies only to groups associated to current user.
+        We want the other way around: apply permission check
+        to make sure that if a user does not belong
+        to a specific group, he/she cannot see the item.
+        Hence, you must define a global rule and add it
+        a new field for a groups, and then mess around
+        w/ domain computation.
 
         As of today, this is still a prototype
         and we might change/improve this check ;)
 
-        Moreover, the `SecureModelConverter` base klass
+        Finally, the `SecureModelConverter` base klass
         is using `exists` to check if the item exists.
         This method in turns does not check for security.
         Hence, we are trying to use the same mechanism
