@@ -62,7 +62,7 @@ class ContextAwareMixin(object):
 class PageController(http.Controller, ContextAwareMixin):
     """CMS page controller."""
 
-    template = 'website_cms.page_default'
+    _template = 'website_cms.page_default'
 
     # `secure_model` is a new converter that check security
     # see `website.security.mixin`.
