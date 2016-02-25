@@ -3,7 +3,7 @@
 # pylint: disable=E0401
 
 from openerp import models
-from openerp import fields
+# from openerp import fields
 from openerp import api
 
 from openerp.addons.website_cms.utils import AttrDict
@@ -13,8 +13,6 @@ class Website(models.Model):
     """Override website model."""
 
     _inherit = "website"
-
-    social_instagram = fields.Char('Instagram account')
 
     # NOTE: we could move this as a base feature in website_cms
 
