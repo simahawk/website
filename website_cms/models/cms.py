@@ -202,6 +202,32 @@ class CMSPage(models.Model):
         """Publish / Unpublish this page right away."""
         self.write({'website_published': not self.website_published})
 
+    @api.multi
+    def open_children(self):
+        """Action to open tree view of children pages."""
+        self.ensure_one()
+        domain = [
+            ('parent_id', '=', self.id),
+        ]
+        context = {
+            'default_parent_id': self.id,
+        }
+        for k in ('type_id', 'view_id'):
+            fname = 'sub_page_' + k
+            value = getattr(self, fname)
+            if value:
+                context['default_' + k] = value.id
+        return {
+            'name': 'Children',
+            'type': 'ir.actions.act_window',
+            'res_model': 'cms.page',
+            'target': 'current',
+            'view_type': 'form',
+            'view_mode': 'tree,form',
+            'domain': domain,
+            'context': context,
+        }
+
     @api.model
     def get_listing(self, published=True,
                     nav=None, type_ids=None,
