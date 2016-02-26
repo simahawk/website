@@ -31,36 +31,36 @@
         </button>
       </div>
 
-      <group name="main_1" col="2">
-        <field name="parent_id" colspan="1" />
-        <field name="name" colspan="1" />
+      <group col="8">
+        <group string="Main data" name="main_1" colspan="4">
+          <field name="parent_id" colspan="2" />
+          <field name="name" colspan="2" />
+          <field name="view_id" colspan="1"
+                 options="{'no_open': True, 'no_create': True}" />
+          <field name="type_id" colspan="1" />
+        </group>
+        <group string="Misc" name="main_2" colspan="4">
+          <field name="nav_include" colspan="2" />
+        </group>
       </group>
-      <group name="main_2" col="2">
-        <field name="view_id" colspan="1"
-               options="{'no_open': True, 'no_create': True}" />
-        <field name="type_id" colspan="1" />
-        <field name="nav_include" colspan="1" />
+
+      <group col="8">
+        <group name="children_defaults" colspan="4"
+               string="Children defaults">
+          <field name="sub_page_type_id" colspan="2"
+                 options="{'no_open': True, 'no_create': True}" />
+          <field name="sub_page_view_id" colspan="2"
+                 options="{'no_open': True, 'no_create': True}" />
+        </group>
       </group>
 
       <notebook>
-        <page name="children" string="Children">
-          <group name="children_defaults" col="2">
-            <field name="sub_page_type_id" colspan="1"
-                   options="{'no_open': True, 'no_create': True}" />
-            <field name="sub_page_view_id" colspan="1"
-                   options="{'no_open': True, 'no_create': True}" />
+
+        <page name="html-stuff" string="Page content">
+          <group name="html">
+            <field name="description" />
+            <field name="body" widget="html" />
           </group>
-          <field name="children_ids" nolabel="1"
-                 context="{'default_type_id':sub_page_type_id,'default_view_id':sub_page_view_id,'default_parent_id':active_id}">
-            <tree>
-              <field name="sequence" widget="handle" />
-              <field name="name" />
-              <field name="type_id" />
-              <field name="view_id" />
-              <field name="nav_include" />
-              <field name="website_published" />
-            </tree>
-          </field>
         </page>
 
         <page name="related-pages" string="Related pages">
@@ -87,26 +87,19 @@
           </field>
         </page>
 
-        <page name="listing" string="Listing">
+        <!-- <page name="listing" string="Listing">
           <group name="main_listing">
             <separator string="Types to list" colspan="4" />
             <field name="list_types_ids" nolabel="1" />
           </group>
-        </page>
+        </page> -->
 
-        <page name="html-stuff" string="Page content">
-          <group name="html">
-            <field name="description" />
-            <field name="body" widget="html" />
-          </group>
-        </page>
-
-        <page name="sidebar-stuff" string="Sidebar content">
+        <!-- <page name="sidebar-stuff" string="Sidebar content">
           <group name="sidebar">
             <field name="sidebar_view_ids" />
             <field name="sidebar_content" widget="html" />
           </group>
-        </page>
+        </page> -->
 
         <page name="permission-stuff" string="Permissions">
           <group name="permissions">
