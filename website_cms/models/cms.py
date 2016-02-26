@@ -134,6 +134,7 @@ class CMSPage(models.Model):
         compute='_compute_hierarchy',
         readonly=True,
         store=True,
+        copy=False,
     )
 
     @api.model
