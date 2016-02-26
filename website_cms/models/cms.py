@@ -161,10 +161,12 @@ class CMSPage(models.Model):
             res[item.id] = self.build_public_url(item)
         return res
 
-    @api.one
+    @api.multi
     @api.depends('parent_id')
     def _compute_hierarchy(self):
-        self.hierarchy = self.build_hierarchy_name(self)
+        for item in self:
+            # XXX: would be better to do one write at the end?
+            item.hierarchy = self.build_hierarchy_name(item)
 
     @api.model
     def build_hierarchy_name(self, item):
