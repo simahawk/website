@@ -41,6 +41,7 @@
         </group>
         <group string="Misc" name="main_2" colspan="4">
           <field name="nav_include" colspan="2" />
+          <field name="image" colspan="2" widget="image" />
         </group>
       </group>
 
