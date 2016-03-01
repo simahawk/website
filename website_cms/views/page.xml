@@ -36,12 +36,13 @@
           <field name="parent_id" colspan="2" />
           <field name="name" colspan="2" />
           <field name="view_id" colspan="1"
-                 options="{'no_open': True, 'no_create': True}" />
+                 options="{'no_open': True, 'no_create': True}"/>
           <field name="type_id" colspan="1" />
         </group>
         <group string="Misc" name="main_2" colspan="4">
           <field name="nav_include" colspan="2" />
-          <field name="image" colspan="2" widget="image" />
+          <field name="redirect_to_id" colspan="2" />
+          <field name="image" colspan="2" widget="image" />/>
         </group>
       </group>
 

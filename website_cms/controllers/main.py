@@ -2,6 +2,7 @@
 
 from openerp import http
 from openerp.http import request
+import werkzeug
 
 
 class ContextAwareMixin(object):
@@ -72,4 +73,8 @@ class PageController(http.Controller, ContextAwareMixin):
     ], type='http', auth='public', website=True)
     def page(self, main_object, path=None, **kw):
         """Handle a `page` route."""
+        if main_object.redirect_to_id:
+            redirect_url = main_object.redirect_to_id.website_url
+            redirect = werkzeug.utils.redirect(redirect_url, 301)
+            return redirect
         return self.render(main_object, **kw)
