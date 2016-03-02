@@ -210,7 +210,7 @@ class CMSPage(models.Model):
         """Allow search in path too."""
         args = args or []
         domain = []
-        if name:
+        if name and self.env.context.get('include_path'):
             domain = [
                 '|',
                 ('name', operator, name),
