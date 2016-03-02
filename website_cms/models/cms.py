@@ -128,12 +128,13 @@ class CMSPage(models.Model):
         help=(u"Decide if this item "
               u"should be included in main navigation."),
     )
-    hierarchy = fields.Char(
-        string='Hierarchy',
-        compute='_compute_hierarchy',
+    path = fields.Char(
+        string='Path',
+        compute='_compute_path',
         readonly=True,
         store=True,
         copy=False,
+        oldname='hierarchy'
     )
     redirect_to_id = fields.Many2one(
         string='Redirect to',
@@ -156,7 +157,7 @@ class CMSPage(models.Model):
 
     @api.model
     def build_public_url(self, item):
-        """Walk trough page hierarchy to build its public URL."""
+        """Walk trough page path to build its public URL."""
         current = item
         parts = [to_slug(current), ]
         while current.parent_id:
@@ -175,37 +176,36 @@ class CMSPage(models.Model):
 
     @api.multi
     @api.depends('parent_id')
-    def _compute_hierarchy(self):
+    def _compute_path(self):
         for item in self:
-            # XXX: would be better to do one write at the end?
-            item.hierarchy = self.build_hierarchy_name(item)
+            item.path = self.build_path(item)
 
     @api.model
-    def build_hierarchy_name(self, item):
+    def build_path(self, item):
         """Walk trough page hierarchy to build its nested name."""
         current = item
-        parts = [current.name, ]
+        parts = []
         while current.parent_id:
             parts.insert(0, current.parent_id.name)
             current = current.parent_id
         # prefix w/ a slash meaning root
         parts.insert(0, '')
-        return ' / '.join(parts)
+        return '/'.join(parts)
 
-    # XXX: temp disabled because this is used for slugs too
-    # repeating each hierarchy item in the url
-    # @api.multi
-    # def name_get(self):
-    #     """Format displayed name."""
-    #     # use name and/or country group name
-    #     res = []
-    #     for item in self:
-    #         res.append((item.id, self.build_hierarchy_name(item)))
-    #     return res
+    @api.multi
+    def name_get(self):
+        """Format displayed name."""
+        if not self.env.context.get('include_path'):
+            return super(CMSPage, self).name_get()
+        res = []
+        for item in self:
+            res.append((item.id,
+                        item.path + ' > ' + item.name))
+        return res
 
     @api.model
     def get_root(self, item=None):
-        """Walk trough page hierarchy to find root ancestor."""
+        """Walk trough page path to find root ancestor."""
         current = item or self
         while current.parent_id:
             current = current.parent_id
@@ -245,7 +245,8 @@ class CMSPage(models.Model):
     @api.model
     def get_listing(self, published=True,
                     nav=None, type_ids=None,
-                    order=None, item=None):
+                    order=None, item=None,
+                    path=None, types_ref=None):
         """Return items to be listed.
 
         Tweak filtering by:
@@ -253,22 +254,34 @@ class CMSPage(models.Model):
         `published` to show published/unpublished items
         `nav` to show nav-included items
         `type_ids` to limit listing to specific page types
+        `types_ref` to limit listing to specific page types
+        by xmlid refs
         `order` to override ordering by sequence
+        `path` to search in a specific path instead of
+        just listing current item's children.
 
         By default filter w/ `list_types_ids` if valued.
 
         """
         item = item or self
-        search_args = [
-            ('parent_id', '=', item.id),
-        ]
+        search_args = []
+        if path is None:
+            search_args.append(('parent_id', '=', item.id))
+        else:
+            search_args.append(('path', 'like', item.path + '%'))
         if published is not None:
             search_args.append(('website_published', '=', published))
         if nav is not None:
             search_args.append(('nav_include', '=', nav))
 
+        if types_ref:
+            if isinstance(types_ref, basestring):
+                types_ref = (types_ref, )
+            type_ids = [self.env.ref(x).id for x in types_ref]
+
         type_ids = type_ids or (
             item.list_types_ids and item.list_types_ids._ids)
+
         if type_ids:
             search_args.append(
                 ('type_id', 'in', type_ids)

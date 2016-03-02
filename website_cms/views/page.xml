@@ -123,7 +123,7 @@
   <field name="arch" type="xml">
     <tree string="Pages">
       <field name="sequence" widget="handle" />
-      <field name="hierarchy" />
+      <field name="path" />
       <field name="name" />
       <field name="view_id" />
       <field name="nav_include" />
