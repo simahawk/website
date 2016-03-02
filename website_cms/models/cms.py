@@ -183,6 +183,8 @@ class CMSPage(models.Model):
     @api.model
     def build_path(self, item):
         """Walk trough page hierarchy to build its nested name."""
+        if not item.parent_id:
+            return '/'
         current = item
         parts = []
         while current.parent_id:

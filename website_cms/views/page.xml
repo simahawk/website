@@ -33,7 +33,7 @@
 
       <group col="8">
         <group string="Main data" name="main_1" colspan="4">
-          <field name="parent_id" colspan="2" />
+          <field name="parent_id" colspan="2" context="{'include_path':1}" />
           <field name="name" colspan="2" />
           <field name="description" colspan="2" />
           <field name="view_id" colspan="1"
@@ -42,7 +42,7 @@
         </group>
         <group string="Misc" name="main_2" colspan="4">
           <field name="nav_include" colspan="2" />
-          <field name="redirect_to_id" colspan="2" />
+          <field name="redirect_to_id" colspan="2" context="{'include_path':1}" />
           <field name="default_view_item_id" colspan="2" context="{'include_path':1}"/>
         </group>
       </group>
@@ -146,6 +146,7 @@
     <search string="Search page">
       <field name="name" />
       <field name="parent_id" />
+      <field name="path" />
       <field name="type_id" />
       <field name="nav_include" />
       <field name="website_published" />
