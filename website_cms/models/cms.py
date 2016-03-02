@@ -9,7 +9,7 @@ from openerp import api
 # from openerp.tools.translate import _
 from openerp.tools.translate import html_translate
 from openerp.addons.website.models.website import slug
-# from openerp.addons.website.models.website import unslug
+from openerp.addons.website.models.website import unslug
 
 
 def to_slug(item):
@@ -204,12 +204,25 @@ class CMSPage(models.Model):
         return res
 
     @api.model
-    def get_root(self, item=None):
-        """Walk trough page path to find root ancestor."""
-        current = item or self
-        while current.parent_id:
-            current = current.parent_id
-        return current
+    def get_root(self, item=None, upper_level=0):
+        """Walk trough page path to find root ancestor.
+
+        URL is made of items' slug so we can jump
+        at any level by looking at path parts.
+
+        Use `upper_level` to stop walking at a precise
+        hierarchy level.
+        """
+        item = item or self
+        # 1st bit is `/cms`
+        bits = item.website_url.split('/')[2:]
+        try:
+            _slug = bits[upper_level]
+        except IndexError:
+            # safely default to real root
+            _slug = bits[0]
+        _, page_id = unslug(_slug)
+        return self.browse(page_id)
 
     @api.multi
     def update_published(self):
