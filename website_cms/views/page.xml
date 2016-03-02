@@ -44,7 +44,6 @@
           <field name="nav_include" colspan="2" />
           <field name="redirect_to_id" colspan="2" />
           <field name="default_view_item_id" colspan="2" context="{'include_path':1}"/>
-          <field name="image" colspan="2" widget="image" />
         </group>
       </group>
 
@@ -63,6 +62,12 @@
         <page name="html-stuff" string="Page content">
           <group name="html">
             <field name="body" widget="html" />
+          </group>
+        </page>
+
+        <page name="images" string="Images">
+          <group>
+            <field name="image" colspan="2" widget="image" />
           </group>
         </page>
 
