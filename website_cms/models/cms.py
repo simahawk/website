@@ -45,10 +45,9 @@ class CMSPage(models.Model):
         required=True,
         translate=True,
     )
-    description = fields.Html(
-        'HTML Description',
-        translate=html_translate,
-        sanitize=True
+    description = fields.Text(
+        'Description',
+        translate=True,
     )
     body = fields.Html(
         'HTML Body',

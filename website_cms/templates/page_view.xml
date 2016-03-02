@@ -27,54 +27,17 @@
 <template id="page_default_content" name="Page default content">
   <t t-call="website_cms.mgmt_actions" />
 
-  <div t-if="not edit_translations"
-       id="main_object_description"
-       class="o_editable"
-       t-att-data-oe-model="main_object._name"
-       t-att-data-oe-field="'description'"
-       t-att-data-oe-id="main_object.id"
-       data-oe-type="html">
+  <div id="object_description"
+       t-field="main_object.description"
+       contenteditable="true"
+       />
 
-    <t t-if="not main_object.description">
-      <p>Fill in your description here...</p>
-    </t>
-    <t t-if="main_object.description">
-      <t t-raw="main_object.description" />
-    </t>
+  <div id="object_body"
+       t-field="main_object.body"
+       class="oe_structure"
+       contenteditable="true"
+       />
 
-  </div>
-  <div t-if="edit_translations" id="object_description">
-    <t t-raw="main_object.description" />
-  </div>
-
-  <div t-if="not edit_translations"
-       id="object_body"
-       class="o_editable"
-       t-att-data-oe-model="main_object._name"
-       t-att-data-oe-field="'body'"
-       t-att-data-oe-id="main_object.id"
-       data-oe-type="html">
-
-    <t t-if="not main_object.body">
-      <p>Fill in your content here...</p>
-    </t>
-    <t t-if="main_object.body">
-      <t t-raw="main_object.body" />
-    </t>
-  </div>
-
-  <div t-if="edit_translations" id="object_body">
-    <t t-raw="main_object.body" />
-  </div>
-
-  <t t-if="False">
-    ### are we sure we cannot simply get above stuff like this???
-    <div id="object_body"
-         t-field="main_object.body"
-         class="oe_structure"
-         contenteditable="true"
-         />
-   </t>
 </template>
 
 <!-- enable view for cms -->
