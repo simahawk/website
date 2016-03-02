@@ -90,9 +90,12 @@ class Website(models.Model):
         return res
 
     @api.model
-    def safe_image_url(self, record, field, size=None):
+    def safe_image_url(self, record, field, size=None, check=True):
         """Return image url if exists."""
         sudo_record = record.sudo()
         if hasattr(sudo_record, field):
+            if not getattr(sudo_record, field) and check:
+                # no image here yet
+                return ''
             return self.image_url(record, field, size=size)
         return ''
