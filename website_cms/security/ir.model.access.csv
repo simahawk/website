@@ -1,2 +1,6 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_cms_page_public,access_cms_page public,model_cms_page,,1,0,0,0
+access_cms_page_designer,access_cms_page designer,model_cms_page,base.group_website_designer,1,1,1,1
+access_cms_page_type_public,access_cms_page_type public,model_cms_page_type,,1,0,0,0
+access_cms_page_type_designer,access_cms_page_type designer,model_cms_page_type,base.group_website_designer,1,1,1,1
+
