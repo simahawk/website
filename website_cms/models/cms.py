@@ -202,8 +202,22 @@ class CMSPage(models.Model):
         res = []
         for item in self:
             res.append((item.id,
-                        item.path + ' > ' + item.name))
+                        item.path.rstrip('/') + '/' + item.name))
         return res
+
+    @api.model
+    def name_search(self, name, args=None, operator='ilike', limit=100):
+        """Allow search in path too."""
+        args = args or []
+        domain = []
+        if name:
+            domain = [
+                '|',
+                ('name', operator, name),
+                ('path', operator, name),
+            ]
+        items = self.search(domain + args, limit=limit)
+        return items.name_get()
 
     @api.model
     def get_root(self, item=None, upper_level=0):
