@@ -143,6 +143,12 @@ class CMSPage(models.Model):
               u"to selected page permanently. "
               u"HTTP status 301 will be set. "),
     )
+    default_view_item_id = fields.Many2one(
+        string='Default view item',
+        comodel_name='cms.page',
+        help=(u"Selet an item to be used as default view "
+              u"for current page. "),
+    )
 
     @api.model
     def _default_type(self):

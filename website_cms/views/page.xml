@@ -42,7 +42,8 @@
         <group string="Misc" name="main_2" colspan="4">
           <field name="nav_include" colspan="2" />
           <field name="redirect_to_id" colspan="2" />
-          <field name="image" colspan="2" widget="image" />/>
+          <field name="default_view_item_id" colspan="2" context="{'include_path':1}"/>
+          <field name="image" colspan="2" widget="image" />
         </group>
       </group>
 

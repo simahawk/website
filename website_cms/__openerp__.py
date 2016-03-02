@@ -4,17 +4,13 @@
 {
     "name": "Website CMS",
     "summary": "CMS features",
-    "version": "1.0.0dev",
+    "version": "1.0.1",
     "category": "Website",
     "website": "https://odoo-community.org/",
     "author": "<AUTHOR(S)>, Odoo Community Association (OCA)",
     "license": "AGPL-3",
-    "application": False,
     "installable": True,
-    "external_dependencies": {
-        "python": [],
-        "bin": [],
-    },
+    'application': False,
     "depends": [
         "base",
         'website',
@@ -33,9 +29,4 @@
         "templates/page_view.xml",
         "templates/sidebar_view.xml",
     ],
-    "demo": [
-    ],
-    "qweb": [
-    ],
-    'application': True,
 }

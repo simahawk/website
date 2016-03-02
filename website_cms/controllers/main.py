@@ -17,8 +17,15 @@ class ContextAwareMixin(object):
     def get_template(self, main_object, **kw):
         """Retrieve rendering template."""
         template = self._template
-        if hasattr(main_object, 'view_id') and main_object.view_id:
+
+        if getattr(main_object, 'view_id', None):
             template = main_object.view_id.key
+
+        if getattr(main_object, 'default_view_item_id', None):
+            view_item = main_object.default_view_item_id
+            if view_item.view_id:
+                template = view_item.view_id.key
+
         if not template:
             raise NotImplementedError("You must provide a template!")
         return template
@@ -42,9 +49,13 @@ class ContextAwareMixin(object):
         """
 
         parent = None
-        if hasattr(main_object, 'parent_id'):
+        if getattr(main_object, 'parent_id', None):
             # get the parent if any
             parent = main_object.parent_id
+
+        if getattr(main_object, 'default_view_item_id', None):
+            # get a default item if any
+            main_object = main_object.default_view_item_id
 
         values = {
             'main_object': main_object,
