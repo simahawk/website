@@ -57,11 +57,11 @@ class ContextAwareMixin(object):
             # get a default item if any
             main_object = main_object.default_view_item_id
 
-        values = {
+        kw.update({
             'main_object': main_object,
             'parent': parent,
-        }
-        return values
+        })
+        return kw
 
     def render(self, main_object, **kw):
         """Retrieve parameters for rendering and render view template."""
@@ -81,8 +81,10 @@ class PageController(http.Controller, ContextAwareMixin):
     @http.route([
         '/cms/<secure_model("cms.page"):main_object>',
         '/cms/<path:path>/<secure_model("cms.page"):main_object>',
+        '/cms/<secure_model("cms.page"):main_object>/page/<int:page>',
+        '/cms/<path:path>/<secure_model("cms.page"):main_object>/page/<int:page>',
     ], type='http', auth='public', website=True)
-    def page(self, main_object, path=None, **kw):
+    def page(self, main_object, **kw):
         """Handle a `page` route."""
         if main_object.redirect_to_id:
             redirect_url = main_object.redirect_to_id.website_url

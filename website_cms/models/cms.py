@@ -2,7 +2,8 @@
 
 # pylint: disable=E0401
 # pylint: disable=W0212
-
+import math
+from openerp.http import request
 from openerp import models
 from openerp import fields
 from openerp import api
@@ -10,6 +11,7 @@ from openerp import api
 from openerp.tools.translate import html_translate
 from openerp.addons.website.models.website import slug
 from openerp.addons.website.models.website import unslug
+from openerp.addons.website_cms.utils import AttrDict
 
 
 def to_slug(item):
@@ -290,14 +292,13 @@ class CMSPage(models.Model):
         just listing current item's children.
 
         By default filter w/ `list_types_ids` if valued.
-
         """
         item = item or self
         search_args = []
         if path is None:
             search_args.append(('parent_id', '=', item.id))
         else:
-            search_args.append(('path', 'like', item.path + '%'))
+            search_args.append(('path', 'like', path + '%'))
         if published is not None:
             search_args.append(('website_published', '=', published))
         if nav is not None:
@@ -316,11 +317,78 @@ class CMSPage(models.Model):
                 ('type_id', 'in', type_ids)
             )
         order = order or 'sequence asc'
-        pages = item.search(
+        pages = self.search(
             search_args,
             order=order
         )
         return pages
+
+    def pager(self, total, page=1, step=10, scope=5, base_url='', url_getter=None):
+        """Custom pager implementation."""
+        # Compute Pager
+        page_count = int(math.ceil(float(total) / step))
+
+        page = max(1, min(int(page if str(page).isdigit() else 1), page_count))
+        scope -= 1
+
+        pmin = max(page - int(math.floor(scope / 2)), 1)
+        pmax = min(pmin + scope, page_count)
+
+        if pmax - pmin < scope:
+            pmin = pmax - scope if pmax - scope > 0 else 1
+
+        if not base_url:
+            # default to current page url, and drop /listing path if any
+            base_url = request.httprequest.url.split('/page')[0]
+
+        def get_url(page_nr):
+            if page_nr <= 1:
+                return base_url
+            _url = "%s/page/%s" % (base_url, page_nr)
+            return _url
+
+        if url_getter is None:
+            url_getter = get_url
+
+        page_prev = max(pmin, page - 1)
+        page_next = max(pmax, page + 1)
+        prev_url = get_url(page_prev)
+        next_url = get_url(page_next)
+        last_url = get_url(pmax)
+        paginated = AttrDict({
+            "need_nav": page_count > 1,
+            "page_count": page_count,
+            "has_prev": page > pmin,
+            "has_next": page < pmax,
+            "current": {
+                'url': get_url(page),
+                'num': page,
+            },
+            "page_prev": AttrDict({
+                'url': prev_url,
+                'num': page_prev,
+            }),
+            "page_next": AttrDict({
+                'url': next_url,
+                'num': page_next,
+            }),
+            "page_last": AttrDict({
+                'url': last_url,
+                'num': pmax,
+            }),
+        })
+        return paginated
+
+    def get_paginated_listing(self, page=0, step=10, **kw):
+        """Get cms.page items for listing sliced for pagination."""
+        pages = all_pages = self.get_listing(**kw)
+        total = len(all_pages)
+        start = page and page - 1 or 0
+        step = step or 10
+        pages = pages[start: start + step]
+        paginated = self.pager(total, page=page, step=step)
+        paginated['results'] = pages
+        return paginated
 
 
 class CMSPageType(models.Model):
