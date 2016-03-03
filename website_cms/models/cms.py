@@ -15,6 +15,7 @@ from openerp.addons.website_cms.utils import AttrDict
 
 
 def to_slug(item):
+    # avoid using diplay_name
     value = (item.id, item.name)
     return slug(value)
 
@@ -160,6 +161,20 @@ class CMSPage(models.Model):
     @api.model
     def build_public_url(self, item):
         """Walk trough page path to build its public URL."""
+        # XXX: this could be expensive... think about it!
+        # We could store it but then we need to update
+        # all the pages below a certain parent
+        # if the parent name changes or if a parent is moved/changed.
+        # We have the same problem with path: check for comment there.
+        # In the end the url will work nonetheless because
+        # the slug contains the object id
+        # but the path in the url will be wrong.
+        # Also, not using parents name to build the path
+        # is bad because we miss the categorization
+        # provided by each parents, that's good for
+        # good URLs, and you allow ppl to not
+        # put in each page name/title a whole keyworded
+        # description of the content itself.
         current = item
         parts = [to_slug(current), ]
         while current.parent_id:
@@ -176,8 +191,19 @@ class CMSPage(models.Model):
             res[item.id] = self.build_public_url(item)
         return res
 
+    # XXX: how to update path for the whole hierarchy
+    # whenever and ancestor parent/name
+    # - no matter the level -  is updated?
+    # Right now we are supporting explicitely 3 levels,
+    # but is not nice and it limits your hierarchy
+    # We could override the write
+    # and trigger updating of path for all the items
+    # in the same path: but how to get this???
     @api.multi
-    @api.depends('parent_id')
+    @api.depends('parent_id',
+                 'parent_id.parent_id',
+                 'parent_id.parent_id.parent_id',
+                 'parent_id.parent_id.parent_id.parent_id')
     def _compute_path(self):
         for item in self:
             item.path = self.build_path(item)
