@@ -34,7 +34,7 @@
 <template id="sidebar_rendering" name="CMS sidebar rendering">
 
 
-  <t t-if="website.has_sidebar(main_object)">
+  <t t-if="website.safe_hasattr(main_object, 'sidebar_view_ids')">
     <t t-if="False">
       main_object.sidebar_view_ids => throws an error
       since there's no safe "hasattr" when evaluating
