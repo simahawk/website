@@ -59,7 +59,8 @@ class CMSPage(models.Model):
     )
     parent_id = fields.Many2one(
         string='Parent',
-        comodel_name='cms.page'
+        comodel_name='cms.page',
+        domain=lambda self: self._domain_parent_id(),
     )
     children_ids = fields.One2many(
         string='Children',
@@ -152,6 +153,13 @@ class CMSPage(models.Model):
         help=(u"Selet an item to be used as default view "
               u"for current page. "),
     )
+
+    @api.model
+    def _domain_parent_id(self):
+        # make sure we don't put sub-pages into news
+        # or any other unforeseen type
+        page_type = self.env.ref('website_cms.default_page_type')
+        return [('type_id', '=', page_type.id)]
 
     @api.model
     def _default_type(self):
