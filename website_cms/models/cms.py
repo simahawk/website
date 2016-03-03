@@ -351,19 +351,19 @@ class CMSPage(models.Model):
             url_getter = get_url
 
         page_prev = max(pmin, page - 1)
-        page_next = max(pmax, page + 1)
-        prev_url = get_url(page_prev)
-        next_url = get_url(page_next)
-        last_url = get_url(pmax)
+        page_next = min(pmax, page + 1)
+        prev_url = url_getter(page_prev)
+        next_url = url_getter(page_next)
+        last_url = url_getter(pmax)
         paginated = AttrDict({
             "need_nav": page_count > 1,
             "page_count": page_count,
             "has_prev": page > pmin,
             "has_next": page < pmax,
-            "current": {
-                'url': get_url(page),
+            "current": AttrDict({
+                'url': url_getter(page),
                 'num': page,
-            },
+            }),
             "page_prev": AttrDict({
                 'url': prev_url,
                 'num': page_prev,
@@ -376,6 +376,10 @@ class CMSPage(models.Model):
                 'url': last_url,
                 'num': pmax,
             }),
+            "pages": [
+                AttrDict({'url': url_getter(i), 'num': i})
+                for i in xrange(pmin, pmax + 1)
+            ]
         })
         return paginated
 
