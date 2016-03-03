@@ -230,6 +230,12 @@ class CMSPage(models.Model):
         parts.insert(0, '')
         return '/'.join(parts)
 
+    @api.model
+    def full_path(self, item=None):
+        """Full path for this item: includes item part."""
+        item = item or self
+        return item.path + '/' + item.name
+
     @api.multi
     def name_get(self):
         """Format displayed name."""
