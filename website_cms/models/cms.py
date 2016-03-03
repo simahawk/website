@@ -298,7 +298,7 @@ class CMSPage(models.Model):
         if path is None:
             search_args.append(('parent_id', '=', item.id))
         else:
-            search_args.append(('path', 'like', path + '%'))
+            search_args.append(('path', '=like', path + '%'))
         if published is not None:
             search_args.append(('website_published', '=', published))
         if nav is not None:

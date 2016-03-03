@@ -29,12 +29,16 @@ class Website(models.Model):
         You can alter this behavior by passing
         `nav=False` to list contents non enabled for nav
         or `nav=None` to ignore nav settings.
+
+        By default consider only `website_cms.default_page_type` type.
         """
+        type_id = self.env.ref('website_cms.default_page_type').id
         result = []
         if pages is None:
             search_args = [
                 ('parent_id', '=', False),
                 ('website_published', '=', True),
+                ('type_id', '=', type_id)
             ]
             if nav is not None:
                 search_args.append(('nav_include', '=', nav))
@@ -48,14 +52,15 @@ class Website(models.Model):
             result.append(
                 self._build_page_item(item,
                                       max_depth=max_depth,
-                                      nav=nav)
+                                      nav=nav,
+                                      type_id=type_id)
             )
         # Find the best way to cache this? Or just rely on varnish & co.?
         # Odoo dispatcher already do cache: let's see if this is enough!
         return result
 
     @api.model
-    def _build_page_item(self, item, max_depth=3, nav=True):
+    def _build_page_item(self, item, max_depth=3, nav=True, type_id=None):
         """Recursive method to build main menu items.
 
         Return a dict-like object containing:
@@ -63,6 +68,7 @@ class Website(models.Model):
         * `url`: public url of the page
         * `children`: list of children pages
         * `nav`: nav_include filtering
+        * `type_id`: filter pages by type
         """
         depth = max_depth or 3  # safe default to avoid infinite recursion
         sec_model = self.env['cms.page']
@@ -73,6 +79,8 @@ class Website(models.Model):
         ]
         if nav is not None:
             search_args.append(('nav_include', '=', nav))
+        if type_id is not None:
+            search_args.append(('type_id', '=', type_id))
         subs = sec_model.search(
             search_args,
             order='sequence asc'
