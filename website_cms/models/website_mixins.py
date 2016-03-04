@@ -130,3 +130,24 @@ class WebsiteCoreMetadataMixin(models.AbstractModel):
         select=True,
         readonly=True,
     )
+
+
+class WebsitePublishedMixin(models.AbstractModel):
+    """Add some more features here.
+
+    Fields:
+    * `published_date`
+    """
+
+    _inherit = "website.published.mixin"
+
+    published_date = fields.Datetime(
+        'Published on',
+    )
+
+    @api.multi
+    def write(self, vals):
+        """Update published date based."""
+        if vals.get('website_published'):
+            vals['published_date'] = fields.Datetime.now()
+        return super(WebsitePublishedMixin, self).write(vals)

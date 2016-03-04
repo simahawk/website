@@ -45,6 +45,7 @@
           <field name="redirect_to_id" colspan="2"
                  context="{'include_path':1, 'default_parent_id': active_id}" />
           <field name="default_view_item_id" colspan="2" context="{'include_path':1}"/>
+          <field name="published_date" colspan="2" />
         </group>
       </group>
 
