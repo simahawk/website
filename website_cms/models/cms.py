@@ -234,6 +234,8 @@ class CMSPage(models.Model):
     def full_path(self, item=None):
         """Full path for this item: includes item part."""
         item = item or self
+        if not item.parent_id:
+            return item.path + item.name
         return item.path + '/' + item.name
 
     @api.multi

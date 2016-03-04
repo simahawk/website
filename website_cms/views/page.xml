@@ -131,6 +131,7 @@
       <field name="sequence" widget="handle" />
       <field name="path" />
       <field name="name" />
+      <field name="type_id" />
       <field name="view_id" />
       <field name="nav_include" />
       <field name="website_published" />
