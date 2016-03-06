@@ -147,7 +147,7 @@ class WebsitePublishedMixin(models.AbstractModel):
 
     @api.multi
     def write(self, vals):
-        """Update published date based."""
+        """Update published date."""
         if vals.get('website_published'):
             vals['published_date'] = fields.Datetime.now()
         return super(WebsitePublishedMixin, self).write(vals)

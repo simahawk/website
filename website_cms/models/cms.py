@@ -317,7 +317,7 @@ class CMSPage(models.Model):
 
     @api.model
     def get_listing(self, published=True,
-                    nav=None, type_ids=None,
+                    nav=None, types_ids=None,
                     order=None, item=None,
                     path=None, types_ref=None):
         """Return items to be listed.
@@ -326,7 +326,7 @@ class CMSPage(models.Model):
 
         `published` to show published/unpublished items
         `nav` to show nav-included items
-        `type_ids` to limit listing to specific page types
+        `types_ids` to limit listing to specific page types
         `types_ref` to limit listing to specific page types
         by xmlid refs
         `order` to override ordering by sequence
@@ -349,14 +349,14 @@ class CMSPage(models.Model):
         if types_ref:
             if isinstance(types_ref, basestring):
                 types_ref = (types_ref, )
-            type_ids = [self.env.ref(x).id for x in types_ref]
+            types_ids = [self.env.ref(x).id for x in types_ref]
 
-        type_ids = type_ids or (
+        types_ids = types_ids or (
             item.list_types_ids and item.list_types_ids._ids)
 
-        if type_ids:
+        if types_ids:
             search_args.append(
-                ('type_id', 'in', type_ids)
+                ('type_id', 'in', types_ids)
             )
         order = order or 'sequence asc'
         pages = self.search(
