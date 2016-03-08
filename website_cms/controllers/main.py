@@ -3,6 +3,7 @@
 from openerp import http
 from openerp.http import request
 import werkzeug
+from openerp.tools.translate import _
 
 
 class ContextAwareMixin(object):
@@ -71,8 +72,8 @@ class ContextAwareMixin(object):
         )
 
 
-class PageController(http.Controller, ContextAwareMixin):
-    """CMS page controller."""
+class PageViewController(http.Controller, ContextAwareMixin):
+    """CMS page view controller."""
 
     _template = 'website_cms.page_default'
 
@@ -84,10 +85,41 @@ class PageController(http.Controller, ContextAwareMixin):
         '/cms/<secure_model("cms.page"):main_object>/page/<int:page>',
         '/cms/<path:path>/<secure_model("cms.page"):main_object>/page/<int:page>',
     ], type='http', auth='public', website=True)
-    def page(self, main_object, **kw):
+    def view_page(self, main_object, **kw):
         """Handle a `page` route."""
         if main_object.redirect_to_id:
             redirect_url = main_object.redirect_to_id.website_url
             redirect = werkzeug.utils.redirect(redirect_url, 301)
             return redirect
         return self.render(main_object, **kw)
+
+
+class PageCreateController(http.Controller, ContextAwareMixin):
+    """CMS page create controller."""
+
+    _template = 'website_cms.page_form'
+
+    def get_render_values(self, parent):
+        values = super(PageCreateController, self).get_render_values(parent)
+        values.update({
+            'name': _('New page title'),
+            'parent_id': parent and parent.id,
+            'website_published': False,
+        })
+        if parent:
+            for fname in ('type_id', 'view_id'):
+                fvalue = getattr(parent, 'sub_page_' + fname)
+                values['type_id'] = fvalue and fvalue.id or False
+        return values
+
+    @http.route([
+        '/cms/add',
+        '/cms/<secure_model("cms.page"):parent>/add',
+        '/cms/<path:path>/<secure_model("cms.page"):parent>/add',
+    ], type='http', auth='user', website=True)
+    def add(self, parent=None, **kw):
+        import pdb;pdb.set_trace()
+        return self.render(parent, **kw)
+        # new_page = request.env['cms.page'].create(values)
+        # url = new_page.website_url + '?enable_editor=1'
+        # return werkzeug.utils.redirect(url)

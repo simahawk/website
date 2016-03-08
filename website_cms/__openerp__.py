@@ -21,12 +21,16 @@
         'security/groups.xml',
         # data
         "data/page_types.xml",
+        "data/form_settings.xml",
         # views
         "views/menuitems.xml",
         "views/page.xml",
         'views/website_menu.xml',
         # templates
+        "templates/assets.xml",
+        "templates/actions.xml",
         "templates/page_view.xml",
         "templates/sidebar_view.xml",
+        "templates/form.xml",
     ],
 }

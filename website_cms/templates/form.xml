@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+<template id="page-form" name="CMS Page Form">
+    <t t-call="website.layout">
+        <form action="/website_form/"
+              method="post"
+              data-model_name="cms.page"
+              data-success_page="/"
+              class="s_website_form form-horizontal container-fluid mt32"
+              enctype="multipart/form-data">
+            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+
+            <div class="form-group form-field o_website_form_required_custom">
+                <label class="col-md-3 col-sm-4 control-label" for="name">Name</label>
+                <div class="col-md-7 col-sm-8">
+                    <input type="text"
+                      class="form-control o_website_form_input"
+                      name="name"
+                      t-att-value="request.params.get('name', '')"
+                      required="1"
+                      />
+                </div>
+            </div>
+
+        </form>
+    </div>
+</template>
+
+</data>
+</openerp>
