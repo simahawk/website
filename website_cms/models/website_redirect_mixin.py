@@ -29,8 +29,7 @@ class WebsiteRedirectMixin(models.AbstractModel):
         string='Redirect to',
         comodel_name='cms.redirect',
         help=(u"If valued, you will be redirected "
-              u"to selected item permanently. "
-              u"HTTP status 301 will be set. "),
+              u"to selected item permanently. "),
         domain=[('create_date', '=', False)]
     )
 
@@ -50,23 +49,12 @@ class WebsiteRedirectMixin(models.AbstractModel):
         })
 
 
-class CMSRedirect(models.Model):
-    """Add some more features here.
+class CMSLinkMixin(models.AbstractModel):
+    """A base mixin for a website model linking another model."""
 
-    Fields:
-    * `redirect_to_id`
-    """
+    _name = "cms.link.mixin"
+    _description = "CMS Link Mixin"
 
-    _name = "cms.redirect"
-    _description = "CMS Redirect record"
-
-    source = fields.Reference(
-        string='Resource',
-        selection='_reference_models',
-    )
-    name = fields.Char(
-        string='Description',
-    )
     cms_page_id = fields.Many2one(
         string='CMS Page',
         comodel_name='cms.page',
@@ -79,31 +67,11 @@ class CMSRedirect(models.Model):
     url = fields.Char(
         'Custom URL',
     )
-    status = fields.Selection(
-        string='Redirect HTTP Status',
-        default=u'301',
-        selection='_selection_status',
-    )
     website_url = fields.Char(
         string='Website URL',
         compute='_compute_website_url',
         readonly=True
     )
-
-    @api.model
-    def _reference_models(self):
-        _models = self.env['ir.model'].search([])
-        # limit to cms.page for now
-        return [(model.model, model.name)
-                for model in _models
-                if model.model == 'cms.page']
-
-    @api.model
-    def _selection_status(self):
-        return [
-            (u'301', _(u"301 Moved Permanently")),
-            (u'307', _(u"307 Temporary Redirect")),
-        ]
 
     @api.multi
     def _compute_website_url(self):
@@ -125,7 +93,7 @@ class CMSRedirect(models.Model):
         res = []
         for item in self:
             name = [
-                'Redirect to >',
+                'Go to >',
             ]
             if self.url:
                 name.append(item.url[:50])
@@ -136,3 +104,43 @@ class CMSRedirect(models.Model):
             name.append('| Status: ' + self.status)
             res.append((item.id, ' '.join(name)))
         return res
+
+
+class CMSRedirect(models.Model):
+    """Add some more features here.
+
+    Fields:
+    * `redirect_to_id`
+    """
+
+    _name = "cms.redirect"
+    _inherit = "cms.link.mixin"
+    _description = "CMS Redirect record"
+
+    name = fields.Char(
+        string='Description',
+    )
+    source = fields.Reference(
+        string='Resource',
+        selection='_reference_models',
+    )
+    status = fields.Selection(
+        string='Redirect HTTP Status',
+        default=u'301',
+        selection='_selection_status',
+    )
+
+    @api.model
+    def _reference_models(self):
+        _models = self.env['ir.model'].search([])
+        # limit to cms.page for now
+        return [(model.model, model.name)
+                for model in _models
+                if model.model == 'cms.page']
+
+    @api.model
+    def _selection_status(self):
+        return [
+            (u'301', _(u"301 Moved Permanently")),
+            (u'307', _(u"307 Temporary Redirect")),
+        ]
