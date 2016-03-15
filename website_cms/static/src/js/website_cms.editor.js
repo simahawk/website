@@ -1,45 +1,52 @@
 odoo.define('website_cms.new_page', function (require) {
 "use strict";
 
-var core = require('web.core');
-var base = require('web_editor.base');
-var Model = require('web.Model');
-var website = require('website.website');
-var contentMenu = require('website.contentMenu');
+    var core = require('web.core');
+    var base = require('web_editor.base');
+    var Model = require('web.Model');
+    var contentMenu = require('website.contentMenu');
+    var ajax = require('web.ajax');
 
-var _t = core._t;
+    var _t = core._t;
 
-contentMenu.TopBar.include({
-    new_cms_page: function () {
-        var model = new Model('cms.page');
-        model.call('name_search', [],
-                   { context: base.get_context() }).then(function (page_ids) {
-            if (page_ids.length == 0) {
-                debugger;
-                document.location = '/cms/add';
-            } else if (page_ids.length == 1){
-                debugger;
-                document.location = '/cms/' + page_ids[0][0] + '/add';
+    contentMenu.TopBar.include({
+
+        getMainObject: function () {
+            // barely taken from website.contentMenu.js
+            var repr = $('html').data('main-object');
+            var m = repr.match(/(.+)\((\d+),(.*)\)/);
+            if (!m) {
+                return null;
+            } else {
+                return {
+                    model: m[1],
+                    id: m[2]|0
+                };
             }
-            else if (page_ids.length > 1) {
-                debugger;
-                website.prompt({
-                    id: "editor_new_page",
-                    window_title: _t("New CMS Page"),
-                    select: "Select parent",
-                    init: function () {
-                        debugger;
-                        return page_ids;
-                    },
-                }).then(function (parent_id) {
-                        debugger;
-                    if (parent_id){
-                        document.location = '/cms/' + parent_id + '/add';
+        },
+        new_cms_page: function () {
+            var self = this;
+            var main_obj = self.getMainObject();
+            var context = base.get_context();
+            var create_url = '/cms/add-page';
+            // if current context is a cms.page
+            // we add the page inside it
+            if (main_obj && main_obj.model == 'cms.page'){
+                var model = new Model(main_obj.model);
+                model.call(
+                    'read',
+                    [[main_obj.id], ['website_url'],
+                    base.get_context()]
+                ).then(function (result) {
+                    console.log(result);
+                    if (result){
+                        console.log(result[0].website_url + '/add-page');
+                        document.location = result[0].website_url + '/add-page';
                     }
                 });
             }
-        });
-    },
-});
+            document.location = create_url;
+        }
+    });
 
 });

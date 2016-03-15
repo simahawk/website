@@ -99,27 +99,34 @@ class PageCreateController(http.Controller, ContextAwareMixin):
 
     _template = 'website_cms.page_form'
 
-    def get_render_values(self, parent):
-        values = super(PageCreateController, self).get_render_values(parent)
-        values.update({
-            'name': _('New page title'),
+    def get_template(self, main_object, **kw):
+        return self._template
+
+    def get_render_values(self, parent=None, **kw):
+        values = {
+            'name': kw.get('name', 'New page title'),
             'parent_id': parent and parent.id,
             'website_published': False,
-        })
+        }
         if parent:
+            values['form_action'] = parent.website_url + '/add-page'
             for fname in ('type_id', 'view_id'):
                 fvalue = getattr(parent, 'sub_page_' + fname)
-                values['type_id'] = fvalue and fvalue.id or False
+                values[fname] = fvalue and fvalue.id or False
         return values
 
     @http.route([
-        '/cms/add',
-        '/cms/<secure_model("cms.page"):parent>/add',
-        '/cms/<path:path>/<secure_model("cms.page"):parent>/add',
-    ], type='http', auth='user', website=True)
+        '/cms/add-page',
+        '/cms/<secure_model("cms.page"):parent>/add-page',
+        '/cms/<path:path>/<secure_model("cms.page"):parent>/add-page',
+    ], type='http', auth='user', methods=['GET', 'POST'], website=True)
     def add(self, parent=None, **kw):
-        import pdb;pdb.set_trace()
-        return self.render(parent, **kw)
-        # new_page = request.env['cms.page'].create(values)
-        # url = new_page.website_url + '?enable_editor=1'
-        # return werkzeug.utils.redirect(url)
+        if request.httprequest.method == 'GET':
+            # render form
+            return self.render(parent, **kw)
+        elif request.httprequest.method == 'POST':
+            # handle form submission
+            values = self.get_render_values(parent=parent, **kw)
+            new_page = request.env['cms.page'].create(values)
+            url = new_page.website_url + '?enable_editor=1'
+            return werkzeug.utils.redirect(url)
