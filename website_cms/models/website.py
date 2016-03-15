@@ -107,3 +107,19 @@ class Website(models.Model):
                 return ''
             return self.image_url(record, field, size=size)
         return ''
+
+    @api.model
+    def download_url(self, item, field_name, filename=''):
+        if not filename:
+            # XXX: we should calculate the filename from the field
+            # but in some cases we do not have a proxy for the value
+            # like for attachments, so we don't have a way
+            # to get the original name of the file.
+            filename = 'download'
+        url = '/web/content/{model}/{ob_id}/{field_name}/{filename}'
+        return url.format(
+            model=item._name,
+            ob_id=item.id,
+            field_name=field_name,
+            filename=filename,
+        )
