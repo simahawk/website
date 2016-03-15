@@ -27,15 +27,16 @@
 <template id="page_default_content" name="Page default content">
   <t t-call="website_cms.mgmt_actions" />
 
-  <div id="object_description"
-       t-field="main_object.description"
-       contenteditable="true"
-       />
+  <t t-if="editable">
+    <div t-field="main_object.description">No description for this page yet. You see this because you can edit this page.</div>
+  </t>
+  <t t-if="not editable and main_object.description">
+    <div t-esc="main_object.description">Description of the page</div>
+  </t>
 
   <div id="object_body"
        t-field="main_object.body"
        class="oe_structure"
-       contenteditable="true"
        />
 
 </template>

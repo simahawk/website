@@ -20,7 +20,7 @@ class TestPage(common.TransactionCase):
             'sub_page_type_id': self.news_type.id,
             'website_published': True,
         })
-        # should fine a way to have default type
+        # XXX: should find a way to have default type
         # for sub page loaded w/out context
         # but looks like we cannot retrieve that
         # from parent neither w/ @api.depends
