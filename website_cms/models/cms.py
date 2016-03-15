@@ -41,7 +41,8 @@ class CMSPage(models.Model):
                 'website.image.mixin',
                 'website.orderable.mixin',
                 'website.coremetadata.mixin',
-                'website.security.mixin']
+                'website.security.mixin',
+                'website.redirect.mixin']
 
     name = fields.Char(
         'Name',
@@ -139,13 +140,6 @@ class CMSPage(models.Model):
         store=True,
         copy=False,
         oldname='hierarchy'
-    )
-    redirect_to_id = fields.Many2one(
-        string='Redirect to',
-        comodel_name='cms.page',
-        help=(u"If valued, you will be redirected "
-              u"to selected page permanently. "
-              u"HTTP status 301 will be set. "),
     )
     default_view_item_id = fields.Many2one(
         string='Default view item',

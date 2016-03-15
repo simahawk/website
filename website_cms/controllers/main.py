@@ -87,9 +87,9 @@ class PageViewController(http.Controller, ContextAwareMixin):
     ], type='http', auth='public', website=True)
     def view_page(self, main_object, **kw):
         """Handle a `page` route."""
-        if main_object.redirect_to_id:
-            redirect_url = main_object.redirect_to_id.website_url
-            redirect = werkzeug.utils.redirect(redirect_url, 301)
+        if main_object.has_redirect():
+            data = main_object.get_redirect_data()
+            redirect = werkzeug.utils.redirect(data.url, data.status)
             return redirect
         return self.render(main_object, **kw)
 

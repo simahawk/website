@@ -25,6 +25,7 @@
         # views
         "views/menuitems.xml",
         "views/page.xml",
+        "views/redirect.xml",
         'views/website_menu.xml',
         # templates
         "templates/assets.xml",

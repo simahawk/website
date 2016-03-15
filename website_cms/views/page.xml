@@ -43,7 +43,7 @@
         <group string="Misc" name="main_2" colspan="4">
           <field name="nav_include" colspan="2" />
           <field name="redirect_to_id" colspan="2"
-                 context="{'include_path':1, 'default_parent_id': active_id}" />
+                 context="{'include_path':1, 'default_source': 'cms.page,' + str(active_id)}" />
           <field name="default_view_item_id" colspan="2" context="{'include_path':1}"/>
           <field name="published_date" colspan="2" />
         </group>
