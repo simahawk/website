@@ -44,8 +44,10 @@ odoo.define('website_cms.new_page', function (require) {
                         document.location = result[0].website_url + '/add-page';
                     }
                 });
+            } else {
+                document.location = create_url;
             }
-            document.location = create_url;
+
         }
     });
 
