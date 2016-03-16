@@ -48,7 +48,6 @@ class ContextAwareMixin(object):
 
         in this case, `page-2` is the main_object and `page-1` the parent.
         """
-
         parent = None
         if getattr(main_object, 'parent_id', None):
             # get the parent if any
@@ -100,9 +99,11 @@ class PageCreateController(http.Controller, ContextAwareMixin):
     _template = 'website_cms.page_form'
 
     def get_template(self, main_object, **kw):
+        """Override to force template."""
         return self._template
 
     def get_render_values(self, parent=None, **kw):
+        """Override to preload values."""
         values = {
             'name': kw.get('name', 'New page title'),
             'parent_id': parent and parent.id,
@@ -121,6 +122,7 @@ class PageCreateController(http.Controller, ContextAwareMixin):
         '/cms/<path:path>/<secure_model("cms.page"):parent>/add-page',
     ], type='http', auth='user', methods=['GET', 'POST'], website=True)
     def add(self, parent=None, **kw):
+        """Handle page add view and form submit."""
         if request.httprequest.method == 'GET':
             # render form
             return self.render(parent, **kw)
