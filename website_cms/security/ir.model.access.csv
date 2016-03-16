@@ -3,4 +3,5 @@ access_cms_page_public,access_cms_page public,model_cms_page,,1,0,0,0
 access_cms_page_designer,access_cms_page designer,model_cms_page,base.group_website_designer,1,1,1,1
 access_cms_page_type_public,access_cms_page_type public,model_cms_page_type,,1,0,0,0
 access_cms_page_type_designer,access_cms_page_type designer,model_cms_page_type,base.group_website_designer,1,1,1,1
-
+access_cms_redirect_public,access_cms_redirect public,model_cms_redirect,,1,0,0,0
+access_cms_redirect_mngr,access_cms_redirect manager,model_cms_redirect,website_cms.cms_manager,1,1,1,1
