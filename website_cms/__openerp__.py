@@ -17,15 +17,17 @@
     ],
     "data": [
         # security
-        'security/ir.model.access.csv',
         'security/groups.xml',
+        'security/ir.model.access.csv',
         # data
         "data/page_types.xml",
-        "data/form_settings.xml",
+        "data/media_categories.xml",
+        # "data/form_settings.xml",
         # views
         "views/menuitems.xml",
-        "views/page.xml",
-        "views/redirect.xml",
+        "views/cms_page.xml",
+        "views/cms_redirect.xml",
+        "views/cms_media.xml",
         'views/website_menu.xml',
         # templates
         "templates/assets.xml",

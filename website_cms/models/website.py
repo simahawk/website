@@ -123,3 +123,8 @@ class Website(models.Model):
             field_name=field_name,
             filename=filename,
         )
+
+    @api.model
+    def get_media_categories(self):
+        """Return all available media categories."""
+        return self.env['cms.media.category'].search([], order='name asc')

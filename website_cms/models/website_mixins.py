@@ -103,6 +103,8 @@ class WebsiteCoreMetadataMixin(models.AbstractModel):
     * `create_uid`
     * `write_date`
     * `write_uid`
+    * `published_date`
+    * `published_uid`
     """
 
     _name = "website.coremetadata.mixin"
@@ -130,19 +132,14 @@ class WebsiteCoreMetadataMixin(models.AbstractModel):
         select=True,
         readonly=True,
     )
-
-
-class WebsitePublishedMixin(models.AbstractModel):
-    """Add some more features here.
-
-    Fields:
-    * `published_date`
-    """
-
-    _inherit = "website.published.mixin"
-
     published_date = fields.Datetime(
         'Published on',
+    )
+    published_uid = fields.Many2one(
+        'res.users',
+        'Published by',
+        select=True,
+        readonly=True,
     )
 
     @api.multi
@@ -150,4 +147,5 @@ class WebsitePublishedMixin(models.AbstractModel):
         """Update published date."""
         if vals.get('website_published'):
             vals['published_date'] = fields.Datetime.now()
-        return super(WebsitePublishedMixin, self).write(vals)
+            vals['published_uid'] = self.env.user.id
+        return super(WebsiteCoreMetadataMixin, self).write(vals)

@@ -1,5 +1,11 @@
 # -*- coding: utf-8 -*-
 
+import mimetypes
+MTYPES = mimetypes.types_map.values()
+IMAGE_TYPES = [x for x in MTYPES if x.startswith('image/')]
+AUDIO_TYPES = [x for x in MTYPES if x.startswith('audio/')]
+VIDEO_TYPES = [x for x in MTYPES if x.startswith('video/')]
+
 
 class AttrDict(dict):
     """A smarter dict."""

@@ -8,4 +8,6 @@ from . import website_redirect_mixin
 from . import website
 from . import website_menu
 from . import ir_ui_view
-from . import cms
+from . import ir_attachment
+from . import cms_page
+from . import cms_media
