@@ -119,7 +119,7 @@ class CMSMedia(models.Model):
     def _compute_icon(self):
         """Compute media icon."""
         for item in self:
-            item.icon = self.get_icon()
+            item.icon = item.get_icon()
 
     @api.model
     def get_icon(self, mimetype=None):

@@ -471,13 +471,15 @@ class CMSPage(models.Model):
     @api.model
     def get_media_listing(self, published=True,
                           category=None, order=None,
-                          item=None, path=None):
+                          item=None, path=None,
+                          lang=None):
         """Return items to be listed.
 
         Tweak filtering by:
 
         `published` to show published/unpublished items or both
         `category` a category obj to limit listing to specific category
+        `lang` a lang obj or lang code to limit listing to specific language
         `order` to override ordering by sequence
 
         # XXX: should we provide a path for media too?
@@ -497,6 +499,12 @@ class CMSPage(models.Model):
 
         if category is not None:
             search_args.append(('category_id', '=', category.id))
+
+        if isinstance(lang, basestring):
+            lang = self.env['res.lang'].search([('code', '=', lang)])
+
+        if lang:
+            search_args.append(('lang_id', '=', lang.id))
 
         order = order or 'sequence asc'
         media = self.env['cms.media'].search(
