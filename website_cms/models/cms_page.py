@@ -332,6 +332,7 @@ class CMSPage(models.Model):
         self.ensure_one()
         domain = [
             ('res_id', '=', self.id),
+            ('res_model', '=', self._name),
         ]
         context = {
             'default_res_id': self.id,
