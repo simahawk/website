@@ -7,7 +7,8 @@ from openerp.http import request
 from openerp import models
 from openerp import fields
 from openerp import api
-# from openerp.tools.translate import _
+from openerp import exceptions
+from openerp.tools.translate import _
 from openerp.tools.translate import html_translate
 from openerp.addons.website.models.website import slug
 from openerp.addons.website.models.website import unslug
@@ -159,6 +160,17 @@ class CMSPage(models.Model):
         # or any other unforeseen type
         page_type = self.env.ref('website_cms.default_page_type')
         return [('type_id', '=', page_type.id)]
+
+    @api.multi
+    @api.constrains('parent_id')
+    def _check_parent_id(self):
+        """Make sure we cannot have parent = self."""
+        self.ensure_one()
+        if self.parent_id and self.parent_id.id == self.id:
+            raise exceptions.ValidationError(
+                _(u'You cannot set the parent of a page '
+                  u'equal to the page itself. Page: "%s"') % self.name
+            )
 
     @api.model
     def _default_type(self):
