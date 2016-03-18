@@ -6,6 +6,7 @@
 
 
 from openerp.tests import common
+from openerp import exceptions
 # from openerp.addons.website.models.website import slug
 
 
@@ -68,6 +69,13 @@ class TestPage(common.TransactionCase):
         self.assertTrue(new.published_date)
         self.all_pages.remove(new)
         new.unlink()
+
+    def test_page_parent_constrain(self):
+        # check parent to avoid recursive assignment
+        self.page.name = 'testing'
+        self.page.invalidate_cache()
+        with self.assertRaises(exceptions.ValidationError):
+            self.page.parent_id = self.page
 
     def test_hierarchy(self):
         # check hierarchy and paths
