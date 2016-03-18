@@ -77,7 +77,9 @@ PAGE_VIEW_ROUTES = [
     '/cms/<secure_model("cms.page"):main_object>/page/<int:page>',
     '/cms/<path:path>/<secure_model("cms.page"):main_object>/page/<int:page>',
     '/cms/<secure_model("cms.page"):main_object>/media/<model("cms.media.category"):media_categ>',
+    '/cms/<secure_model("cms.page"):main_object>/media/<model("cms.media.category"):media_categ>/page/<int:page>',
     '/cms/<path:path>/<secure_model("cms.page"):main_object>/media/<model("cms.media.category"):media_categ>',
+    '/cms/<path:path>/<secure_model("cms.page"):main_object>/media/<model("cms.media.category"):media_categ>/page/<int:page>',
 ]
 
 

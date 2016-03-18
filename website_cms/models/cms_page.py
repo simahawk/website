@@ -430,6 +430,7 @@ class CMSPage(models.Model):
         next_url = url_getter(page_next)
         last_url = url_getter(pmax)
         paginated = AttrDict({
+            "items_count": total,
             "need_nav": page_count > 1,
             "page_count": page_count,
             "has_prev": page > pmin,
@@ -457,16 +458,26 @@ class CMSPage(models.Model):
         })
         return paginated
 
-    def get_paginated_listing(self, page=0, step=10, **kw):
-        """Get cms.page items for listing sliced for pagination."""
-        pages = all_pages = self.get_listing(**kw)
-        total = len(all_pages)
-        start = page and page - 1 or 0
+    def _paginate(self, all_items, page=1, step=10):
+        """Prepare pagination."""
+        total = len(all_items)
+        start = (page and page - 1) or 0
         step = step or 10
-        pages = pages[start: start + step]
+        items = all_items[start * step: (start * step) + step]
         paginated = self.pager(total, page=page, step=step)
-        paginated['results'] = pages
+        paginated['results'] = items
         return paginated
+
+    def get_paginated_listing(self, page=0, step=10, **kw):
+        """Get items for listing sliced for pagination."""
+        all_items = self.get_listing(**kw)
+        return self._paginate(all_items, page=page, step=step)
+
+    def get_paginated_media_listing(self, page=0, step=10, **kw):
+        """Get items for listing sliced for pagination."""
+        # XXX: shoul we merge this w/ above listing?
+        all_items = self.get_media_listing(**kw)
+        return self._paginate(all_items, page=page, step=step)
 
     @api.model
     def get_media_listing(self, published=True,
