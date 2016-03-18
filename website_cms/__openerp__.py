@@ -28,6 +28,7 @@
         "views/cms_page.xml",
         "views/cms_redirect.xml",
         "views/cms_media.xml",
+        "views/cms_media_category.xml",
         'views/website_menu.xml',
         # templates
         "templates/assets.xml",

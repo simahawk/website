@@ -28,7 +28,7 @@
   </field>
 </record>
 
-<record model="ir.actions.act_window" id="action_cms_files" >
+<record model="ir.actions.act_window" id="action_cms_media" >
     <field name="name">Media</field>
     <field name="type">ir.actions.act_window</field>
     <field name="res_model">cms.media</field>
@@ -40,6 +40,19 @@
         </p>
         <p>
             Also you will find here all the related documents and download it by clicking on any individual document.
+        </p>
+    </field>
+</record>
+
+<record model="ir.actions.act_window" id="action_cms_media_categ" >
+    <field name="name">Media categories</field>
+    <field name="type">ir.actions.act_window</field>
+    <field name="res_model">cms.media.category</field>
+    <field name="view_type">form</field>
+    <field name="view_id" eval="False"/>
+    <field name="help" type="html">
+        <p class="oe_view_nocontent_create">
+            Click here to create new categories.
         </p>
     </field>
 </record>
@@ -71,10 +84,19 @@
   />
 
 <menuitem
-  id="menu_files"
+  id="menu_media"
   parent="menu_cms_root"
   name="Media"
-  action="action_cms_files"
+  action="action_cms_media"
+  sequence="20"
+  groups="website_cms.cms_manager"
+  />
+
+<menuitem
+  id="menu_media_categ"
+  parent="menu_cms_root"
+  name="Media Categories"
+  action="action_cms_media_categ"
   sequence="20"
   groups="website_cms.cms_manager"
   />

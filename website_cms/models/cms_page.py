@@ -458,21 +458,17 @@ class CMSPage(models.Model):
 
     @api.model
     def get_media_listing(self, published=True,
-                          nav=None, category=None,
-                          order=None, item=None,
-                          path=None, types_ref=None):
+                          category=None, order=None,
+                          item=None, path=None):
         """Return items to be listed.
-
-        TODO..........................
 
         Tweak filtering by:
 
-        `published` to show published/unpublished items
-        `nav` to show nav-included items
-        `types_ids` to limit listing to specific page types
-        `types_ref` to limit listing to specific page types
-        by xmlid refs
+        `published` to show published/unpublished items or both
+        `category` a category obj to limit listing to specific category
         `order` to override ordering by sequence
+
+        # XXX: should we provide a path for media too?
         `path` to search in a specific path instead of
         just listing current item's children.
 

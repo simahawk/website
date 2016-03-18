@@ -125,6 +125,7 @@ class Website(models.Model):
         )
 
     @api.model
-    def get_media_categories(self):
+    def get_media_categories(self, active=True):
         """Return all available media categories."""
-        return self.env['cms.media.category'].search([], order='name asc')
+        return self.env['cms.media.category'].search(
+            [('active', '=', active)])

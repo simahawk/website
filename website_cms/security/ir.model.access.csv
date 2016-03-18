@@ -8,4 +8,4 @@ access_cms_redirect_mngr,access_cms_redirect manager,model_cms_redirect,website_
 access_cms_media_public,access_cms_media public,model_cms_media,,1,0,0,0
 access_cms_media_mngr,access_cms_media manager,model_cms_media,website_cms.cms_manager,1,1,1,1
 access_cms_media_category_public,access_cms_media_category public,model_cms_media_category,,1,0,0,0
-access_cms_media_category_mngr,access_cms_media_category manager,model_cms_media_category,website_cms.cms_manager,1,1,1,1
+access_cms_media_category_mngr,access_cms_media_category manager,model_cms_media_category,website_cms.cms_media_category_manager,1,1,1,1

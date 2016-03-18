@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <openerp>
-    <data>
+    <data noupdate="1">
 
 
 <record id="media_category_document" model="cms.media.category">
@@ -15,6 +15,11 @@ application/vnd.ms-powerpointtd
 application/vnd.openxmlformats-officedocument.presentationml.slideshow
 application/vnd.openxmlformats-officedocument.presentationml.presentation
     </field>
+</record>
+
+
+<record id="media_category_image" model="cms.media.category">
+    <field name="name">Image</field>
 </record>
 
 

@@ -51,6 +51,7 @@ class CMSMedia(models.Model):
     force_category_id = fields.Many2one(
         string='Force category',
         comodel_name='cms.media.category',
+        domain=[('active', '=', True)],
     )
     icon = fields.Char(
         'Icon',
@@ -96,6 +97,7 @@ class CMSMedia(models.Model):
     def guess_category(self, mimetype):
         """Guess media category by mimetype."""
         xmlid = None
+        # look for real media first
         if mimetype in IMAGE_TYPES:
             xmlid = 'website_cms.media_category_image'
         if mimetype in VIDEO_TYPES:
@@ -104,9 +106,11 @@ class CMSMedia(models.Model):
             xmlid = 'website_cms.media_category_audio'
         if xmlid:
             return self.env.ref(xmlid)
+        # fallback to search by mimetype
         category_model = self.env['cms.media.category']
         cat = category_model.search([
-            ('mimetypes', '=like', '%{}%'.format(mimetype))
+            ('mimetypes', '=like', '%{}%'.format(mimetype)),
+            ('active', '=', True)
         ])
         return cat and cat[0] or None
 
@@ -115,14 +119,17 @@ class CMSMedia(models.Model):
     def _compute_icon(self):
         """Compute media icon."""
         for item in self:
-            # TBD
-            if item.category_id.icon:
-                item.icon = item.category_id.icon
-                continue
             item.icon = self.get_icon()
 
+    @api.model
     def get_icon(self, mimetype=None):
-        return ''
+        """Return a CSS class for icon.
+
+        You can override this to provide different
+        icons for your media.
+        """
+        # TODO: improve this default
+        return 'file-text'
 
     @api.multi
     def _website_url(self):
@@ -151,7 +158,6 @@ class CMSMediaCategory(models.Model):
     _name = 'cms.media.category'
     _inherit = 'website.orderable.mixin'
     _description = 'CMS Media Category'
-    _order = 'name asc'
 
     name = fields.Char(
         'Name',
@@ -160,10 +166,13 @@ class CMSMediaCategory(models.Model):
     )
     mimetypes = fields.Text(
         'Mimetypes',
+        help=('Customize mimetypes associated '
+              'to this category.')
     )
     icon = fields.Char(
         'Icon',
     )
+    active = fields.Boolean('Active?', default=True)
 
     @api.model
     def public_slug(self):
