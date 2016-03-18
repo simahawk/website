@@ -25,25 +25,24 @@ class TestMedia(openerp.tests.HttpCase):
     def setUp(self):
         super(TestMedia, self).setUp()
 
-        self.cms_file = self.env['cms.media']
+        self.cms_media = self.env['cms.media']
         # Media 1
         self.blob1_b64 = 'blob1'.encode('base64')
-        self.f1 = self.cms_file.create(
+        self.f1 = self.cms_media.create(
             {'name': 'f1', 'datas': self.blob1_b64})
         # Media 1
         self.blob2_b64 = 'blob2'.encode('base64')
-        self.f2 = self.cms_file.create(
+        self.f2 = self.cms_media.create(
             {'name': 'f2',
              'datas': self.blob1_b64,
              'datas_fname': 'f2.txt'})
 
         self.all_files = [self.f1, self.f2]
 
-    # def tearDown(self):
-    #     super(TestMedia, self).tearDown()
-    #     self.registry('cms.media').unlink(
-    #         self.cr, 1, [x.id for x in self.all_files])
-
+    def tearDown(self):
+        super(TestMedia, self).tearDown()
+        self.registry('cms.media').unlink(
+            self.cr, 1, [x.id for x in self.all_files])
 
     def test_url(self):
         # no file name, default to /download

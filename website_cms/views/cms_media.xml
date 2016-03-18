@@ -48,10 +48,10 @@
                      options="{'no_open': True, 'no_create': True}"/>
             </group>
             <group string="Attached To" groups="base.group_no_one">
-              <field name="res_model"/>
-              <field name="res_field"/>
-              <field name="res_id"/>
-              <field name="res_name"/>
+              <field name="res_model" />
+              <field name="res_field" />
+              <field name="res_id" />
+              <field name="res_name" />
             </group>
             <group string="History" groups="base.group_no_one">
               <label for="create_uid" string="Created on"/>
