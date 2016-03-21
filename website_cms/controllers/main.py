@@ -71,6 +71,8 @@ class ContextAwareMixin(object):
         )
 
 
+# `secure_model` is our converter that checks security
+# see `website.security.mixin`.
 PAGE_VIEW_ROUTES = [
     '/cms/<secure_model("cms.page"):main_object>',
     '/cms/<path:path>/<secure_model("cms.page"):main_object>',
@@ -88,8 +90,6 @@ class PageViewController(http.Controller, ContextAwareMixin):
 
     _template = 'website_cms.page_default'
 
-    # `secure_model` is a new converter that check security
-    # see `website.security.mixin`.
     @http.route(PAGE_VIEW_ROUTES, type='http', auth='public', website=True)
     def view_page(self, main_object, **kw):
         """Handle a `page` route."""

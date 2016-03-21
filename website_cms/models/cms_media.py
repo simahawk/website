@@ -176,4 +176,5 @@ class CMSMediaCategory(models.Model):
 
     @api.model
     def public_slug(self):
+        """Used to generate relative URL for category."""
         return slug(self)

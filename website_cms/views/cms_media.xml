@@ -27,8 +27,7 @@
             <field name="name"/>
           </h1>
           <group name="url" string="Public URL"  colspan="4">
-            <field name="website_url" widget="url" nolabel="1" />
-            <field name="datas_fname"  />
+            <field name="website_url" widget="url" nolabel="1" readonly="1" />
           </group>
           <group name="description_group" string="Description" groups="base.group_no_one"  colspan="4">
             <field name="description" nolabel="1"/>
@@ -113,9 +112,9 @@
           <field name="create_uid"/>
           <field name="type"/>
           <group expand="0" string="Group By">
+            <filter name="category_id" string="Category" domain="[]" context="{'group_by':'category_id'}"/>
             <filter name="owner" string="Owner" domain="[]" context="{'group_by':'create_uid'}"/>
             <filter string="Type" domain="[]" context="{'group_by':'type'}" groups="base.group_no_one"/>
-            <filter string="Company" domain="[]" context="{'group_by':'company_id'}" groups="base.group_multi_company"/>
             <filter string="Creation Month" domain="[]" context="{'group_by':'create_date'}"/>
           </group>
         </search>

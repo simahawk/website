@@ -336,6 +336,7 @@ class CMSPage(models.Model):
         ]
         context = {
             'default_res_id': self.id,
+            'default_res_model': self._name,
         }
         return {
             'name': 'Media',
