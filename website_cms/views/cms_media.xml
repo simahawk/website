@@ -2,23 +2,18 @@
 <odoo>
 
   <record id="cms_media_form" model="ir.ui.view">
-      <field name="name">CMS Media Form</field>
-      <field name="model">cms.media</field>
-      <field name="arch" type="xml">
-        <form string="Media">
-         <sheet>
+    <field name="name">CMS Media Form</field>
+    <field name="model">cms.media</field>
+    <field name="arch" type="xml">
+      <form string="Media">
+        <sheet>
           <div class="oe_button_box" name="button_box">
             <button
-              class="oe_stat_button"
-              name="website_publish_button"
-              type="object" icon="fa-globe">
-                <field name="website_published" widget="website_button"/>
-            </button>
-            <button
-              class="oe_stat_button"
               name="update_published"
-              type="object" icon="fa-globe"
-              string="Publish / Unpublish now!">
+              class="oe_stat_button"
+              icon="fa-globe"
+              type="object">
+                <field name="website_published" widget="website_button"/>
             </button>
           </div>
 
@@ -60,7 +55,12 @@
               </div>
             </group>
             <group name="images" string="Preview">
-              <field name="image" colspan="2" widget="image" string="Preview for listing and presentation" />
+              <field name="image"
+                     string="Preview for listing and presentation"
+                     colspan="2"
+                     widget="image"
+                     options='{"preview_image": "image_medium"}'
+                     />
             </group>
           </group>
         </sheet>

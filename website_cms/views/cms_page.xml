@@ -75,7 +75,10 @@
 
         <page name="images" string="Images">
           <group>
-            <field name="image" colspan="2" widget="image" />
+            <field name="image" colspan="2"
+                   widget="image"
+                   options='{"preview_image": "image_thumb"}'
+                   />
           </group>
         </page>
 
