@@ -81,6 +81,11 @@ class CMSPage(models.Model):
         inverse_name='res_id',
         comodel_name='ir.attachment'
     )
+    media_ids = fields.One2many(
+        string='Media items',
+        inverse_name='res_id',
+        comodel_name='cms.media'
+    )
     type_id = fields.Many2one(
         string='Page type',
         comodel_name='cms.page.type',
@@ -321,6 +326,29 @@ class CMSPage(models.Model):
             'context': context,
         }
 
+    @api.multi
+    def open_media(self):
+        """Action to open tree view of contained media."""
+        self.ensure_one()
+        domain = [
+            ('res_id', '=', self.id),
+            ('res_model', '=', self._name),
+        ]
+        context = {
+            'default_res_id': self.id,
+            'default_res_model': self._name,
+        }
+        return {
+            'name': 'Media',
+            'type': 'ir.actions.act_window',
+            'res_model': 'cms.media',
+            'target': 'current',
+            'view_type': 'form',
+            'view_mode': 'tree,form',
+            'domain': domain,
+            'context': context,
+        }
+
     @api.model
     def get_listing(self, published=True,
                     nav=None, types_ids=None,
@@ -404,6 +432,7 @@ class CMSPage(models.Model):
         next_url = url_getter(page_next)
         last_url = url_getter(pmax)
         paginated = AttrDict({
+            "items_count": total,
             "need_nav": page_count > 1,
             "page_count": page_count,
             "has_prev": page > pmin,
@@ -431,16 +460,71 @@ class CMSPage(models.Model):
         })
         return paginated
 
-    def get_paginated_listing(self, page=0, step=10, **kw):
-        """Get cms.page items for listing sliced for pagination."""
-        pages = all_pages = self.get_listing(**kw)
-        total = len(all_pages)
-        start = page and page - 1 or 0
+    def _paginate(self, all_items, page=1, step=10):
+        """Prepare pagination."""
+        total = len(all_items)
+        start = (page and page - 1) or 0
         step = step or 10
-        pages = pages[start: start + step]
+        items = all_items[start * step: (start * step) + step]
         paginated = self.pager(total, page=page, step=step)
-        paginated['results'] = pages
+        paginated['results'] = items
         return paginated
+
+    def get_paginated_listing(self, page=0, step=10, **kw):
+        """Get items for listing sliced for pagination."""
+        all_items = self.get_listing(**kw)
+        return self._paginate(all_items, page=page, step=step)
+
+    def get_paginated_media_listing(self, page=0, step=10, **kw):
+        """Get items for listing sliced for pagination."""
+        # XXX: shoul we merge this w/ above listing?
+        all_items = self.get_media_listing(**kw)
+        return self._paginate(all_items, page=page, step=step)
+
+    @api.model
+    def get_media_listing(self, published=True,
+                          category=None, order=None,
+                          item=None, path=None,
+                          lang=None):
+        """Return items to be listed.
+
+        Tweak filtering by:
+
+        `published` to show published/unpublished items or both
+        `category` a category obj to limit listing to specific category
+        `lang` a lang obj or lang code to limit listing to specific language
+        `order` to override ordering by sequence
+
+        # XXX: should we provide a path for media too?
+        `path` to search in a specific path instead of
+        just listing current item's children.
+
+        By default filter w/ `list_types_ids` if valued.
+        """
+        item = item or self
+        search_args = []
+        if path is None:
+            search_args.append(('res_id', '=', item.id))
+        else:
+            search_args.append(('path', '=like', path + '%'))
+        if published is not None:
+            search_args.append(('website_published', '=', published))
+
+        if category is not None:
+            search_args.append(('category_id', '=', category.id))
+
+        if isinstance(lang, basestring):
+            lang = self.env['res.lang'].search([('code', '=', lang)])
+
+        if lang:
+            search_args.append(('lang_id', '=', lang.id))
+
+        order = order or 'sequence asc'
+        media = self.env['cms.media'].search(
+            search_args,
+            order=order
+        )
+        return media
 
 
 class CMSPageType(models.Model):

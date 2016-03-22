@@ -19,6 +19,13 @@
           />
         <button
           class="oe_stat_button"
+          name="open_media"
+          type="object"
+          icon="fa-list"
+          string="Media"
+          />
+        <button
+          class="oe_stat_button"
           name="website_publish_button"
           type="object" icon="fa-globe">
             <field name="website_published" widget="website_button"/>
@@ -45,7 +52,6 @@
           <field name="redirect_to_id" colspan="2"
                  context="{'include_path':1, 'default_source': 'cms.page,' + str(active_id)}" />
           <field name="default_view_item_id" colspan="2" context="{'include_path':1}"/>
-          <field name="published_date" colspan="2" />
         </group>
       </group>
 
@@ -69,7 +75,10 @@
 
         <page name="images" string="Images">
           <group>
-            <field name="image" colspan="2" widget="image" />
+            <field name="image" colspan="2"
+                   widget="image"
+                   options='{"preview_image": "image_thumb"}'
+                   />
           </group>
         </page>
 
@@ -95,6 +104,19 @@
               <field name="create_date" />
             </tree>
           </field>
+        </page>
+
+        <page name="history" string="History">
+          <label for="create_uid" string="Created on"/>
+          <div name="creation_div">
+            <field name="create_uid" readonly="1" class="oe_inline"/> on
+            <field name="create_date" readonly="1" class="oe_inline"/>
+          </div>
+          <label for="published_date" string="Published on"/>
+          <div name="publish_div">
+            <field name="published_uid" readonly="1" class="oe_inline"/> on
+            <field name="published_date" class="oe_inline"/>
+          </div>
         </page>
 
         <!-- <page name="listing" string="Listing">

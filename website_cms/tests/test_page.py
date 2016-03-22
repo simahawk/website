@@ -12,6 +12,9 @@ from openerp import exceptions
 
 class TestPage(common.TransactionCase):
 
+    at_install = False
+    post_install = True
+
     def setUp(self):
         super(TestPage, self).setUp()
         self.model = self.env['cms.page']
