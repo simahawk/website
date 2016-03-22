@@ -34,6 +34,7 @@
           </group>
           <group name="misc">
             <group>
+              <field name="page_id" context="{'include_path':1}" />
               <field name="lang_id"
                      options="{'no_open': True, 'no_create': True}"/>
               <field name="type" />
@@ -46,13 +47,7 @@
               <field name="force_category_id"
                      options="{'no_open': True, 'no_create': True}"/>
             </group>
-            <group string="Attached To" groups="base.group_no_one">
-              <field name="res_model" />
-              <field name="res_field" />
-              <field name="res_id" />
-              <field name="res_name" />
-            </group>
-            <group string="History" groups="base.group_no_one">
+            <group string="History">
               <label for="create_uid" string="Created on"/>
               <div name="creation_div">
                 <field name="create_uid" readonly="1" class="oe_inline"/> on

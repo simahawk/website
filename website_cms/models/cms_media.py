@@ -41,6 +41,10 @@ class CMSMedia(models.Model):
         domain=lambda self: self._domain_lang_id(),
         select=True,
     )
+    page_id = fields.Many2one(
+        string='Page',
+        comodel_name='cms.page',
+    )
     category_id = fields.Many2one(
         string='Category',
         comodel_name='cms.media.category',
@@ -150,6 +154,28 @@ class CMSMedia(models.Model):
     def update_published(self):
         """Publish / Unpublish this page right away."""
         self.write({'website_published': not self.website_published})
+
+    @api.model
+    def create(self, vals):
+        """Override to keep link w/ page resource.
+
+        `ir.attachment` have a weak relation w/ related resources.
+        We want the user to be able to select a page,
+        but on the same time we need to keep this in sync w/
+        attachment machinery. There you go!
+        """
+        if vals.get('page_id') is not None:
+            vals['res_id'] = vals.get('page_id')
+            vals['res_model'] = vals.get('page_id') and 'cms.page'
+        return super(CMSMedia, self).create(vals)
+
+    @api.multi
+    def write(self, vals):
+        """Override to keep link w/ page resource."""
+        if vals.get('page_id') is not None:
+            vals['res_id'] = vals.get('page_id')
+            vals['res_model'] = vals.get('page_id') and 'cms.page'
+        return super(CMSMedia, self).write(vals)
 
 
 class CMSMediaCategory(models.Model):
