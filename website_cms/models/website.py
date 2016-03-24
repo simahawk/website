@@ -14,12 +14,11 @@ class Website(models.Model):
 
     _inherit = "website"
 
-    # NOTE: we could move this as a base feature in website_cms
-
     @api.model
-    def get_public_nav_pages(self, max_depth=3, pages=None,
-                             nav=True, type_ids=None):
-        """Return public pages for navigation.
+    def get_nav_pages(self, max_depth=3, pages=None,
+                      nav=True, type_ids=None,
+                      published=True):
+        """Return pages for navigation.
 
         Given a `max_detph` build a list containing
         a hierarchy of menu and sub menu.
@@ -34,6 +33,8 @@ class Website(models.Model):
         * `type_ids`: filter pages by a list of types' ids
 
         By default consider only `website_cms.default_page_type` type.
+
+        * `published`: filter pages by a publishing state
         """
         type_ids = type_ids or [
             self.env.ref('website_cms.default_page_type').id, ]
@@ -41,9 +42,11 @@ class Website(models.Model):
         if pages is None:
             search_args = [
                 ('parent_id', '=', False),
-                ('website_published', '=', True),
                 ('type_id', 'in', type_ids)
             ]
+            if published is not None:
+                search_args.append(('website_published', '=', published))
+
             if nav is not None:
                 search_args.append(('nav_include', '=', nav))
 
@@ -57,14 +60,17 @@ class Website(models.Model):
                 self._build_page_item(item,
                                       max_depth=max_depth,
                                       nav=nav,
-                                      type_ids=type_ids)
+                                      type_ids=type_ids,
+                                      published=published)
             )
         # Find the best way to cache this? Or just rely on varnish & co.?
         # Odoo dispatcher already do cache: let's see if this is enough!
         return result
 
     @api.model
-    def _build_page_item(self, item, max_depth=3, nav=True, type_ids=None):
+    def _build_page_item(self, item, max_depth=3,
+                         nav=True, type_ids=None,
+                         published=True):
         """Recursive method to build main menu items.
 
         Return a dict-like object containing:
@@ -73,14 +79,16 @@ class Website(models.Model):
         * `children`: list of children pages
         * `nav`: nav_include filtering
         * `type_ids`: filter pages by a list of types' ids
+        * `published`: filter pages by a publishing state
         """
         depth = max_depth or 3  # safe default to avoid infinite recursion
         sec_model = self.env['cms.page']
         # XXX: consider to define these args in the main method
         search_args = [
             ('parent_id', '=', item.id),
-            ('website_published', '=', True),
         ]
+        if published is not None:
+            search_args.append(('website_published', '=', published))
         if nav is not None:
             search_args.append(('nav_include', '=', nav))
         if type_ids is not None:
@@ -98,6 +106,7 @@ class Website(models.Model):
             'name': item.name,
             'url': item.website_url,
             'children': children,
+            'website_published': item.website_published,
         })
         return res
 
