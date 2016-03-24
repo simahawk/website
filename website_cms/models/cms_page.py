@@ -331,12 +331,10 @@ class CMSPage(models.Model):
         """Action to open tree view of contained media."""
         self.ensure_one()
         domain = [
-            ('res_id', '=', self.id),
-            ('res_model', '=', self._name),
+            ('page_id', '=', self.id),
         ]
         context = {
-            'default_res_id': self.id,
-            'default_res_model': self._name,
+            'default_page_id': self.id,
         }
         return {
             'name': 'Media',
