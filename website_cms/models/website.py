@@ -17,7 +17,8 @@ class Website(models.Model):
     # NOTE: we could move this as a base feature in website_cms
 
     @api.model
-    def get_public_nav_pages(self, max_depth=3, pages=None, nav=True):
+    def get_public_nav_pages(self, max_depth=3, pages=None,
+                             nav=True, type_ids=None):
         """Return public pages for navigation.
 
         Given a `max_detph` build a list containing
@@ -30,15 +31,18 @@ class Website(models.Model):
         `nav=False` to list contents non enabled for nav
         or `nav=None` to ignore nav settings.
 
+        * `type_ids`: filter pages by a list of types' ids
+
         By default consider only `website_cms.default_page_type` type.
         """
-        type_id = self.env.ref('website_cms.default_page_type').id
+        type_ids = type_ids or [
+            self.env.ref('website_cms.default_page_type').id, ]
         result = []
         if pages is None:
             search_args = [
                 ('parent_id', '=', False),
                 ('website_published', '=', True),
-                ('type_id', '=', type_id)
+                ('type_id', 'in', type_ids)
             ]
             if nav is not None:
                 search_args.append(('nav_include', '=', nav))
@@ -53,14 +57,14 @@ class Website(models.Model):
                 self._build_page_item(item,
                                       max_depth=max_depth,
                                       nav=nav,
-                                      type_id=type_id)
+                                      type_ids=type_ids)
             )
         # Find the best way to cache this? Or just rely on varnish & co.?
         # Odoo dispatcher already do cache: let's see if this is enough!
         return result
 
     @api.model
-    def _build_page_item(self, item, max_depth=3, nav=True, type_id=None):
+    def _build_page_item(self, item, max_depth=3, nav=True, type_ids=None):
         """Recursive method to build main menu items.
 
         Return a dict-like object containing:
@@ -68,7 +72,7 @@ class Website(models.Model):
         * `url`: public url of the page
         * `children`: list of children pages
         * `nav`: nav_include filtering
-        * `type_id`: filter pages by type
+        * `type_ids`: filter pages by a list of types' ids
         """
         depth = max_depth or 3  # safe default to avoid infinite recursion
         sec_model = self.env['cms.page']
@@ -79,8 +83,8 @@ class Website(models.Model):
         ]
         if nav is not None:
             search_args.append(('nav_include', '=', nav))
-        if type_id is not None:
-            search_args.append(('type_id', '=', type_id))
+        if type_ids is not None:
+            search_args.append(('type_id', 'in', type_ids))
         subs = sec_model.search(
             search_args,
             order='sequence asc'
