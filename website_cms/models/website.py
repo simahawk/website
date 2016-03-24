@@ -5,6 +5,7 @@
 from openerp import models
 # from openerp import fields
 from openerp import api
+from openerp import tools
 
 from openerp.addons.website_cms.utils import AttrDict
 
@@ -14,7 +15,9 @@ class Website(models.Model):
 
     _inherit = "website"
 
+    # XXX: `pages` does not play well w/ caching, gotta fix this
     @api.model
+    @tools.ormcache('max_depth', 'pages', 'nav', 'type_ids', 'published')
     def get_nav_pages(self, max_depth=3, pages=None,
                       nav=True, type_ids=None,
                       published=True):
