@@ -100,6 +100,10 @@ class PageViewController(http.Controller, ContextAwareMixin):
             data = main_object.get_redirect_data()
             redirect = werkzeug.utils.redirect(data.url, data.status)
             return redirect
+        if 'edit_translations' in kw:
+            # for some reasons here we get an empty string
+            # as value, and this breaks translation editor initialization :(
+            kw['edit_translations'] = True
         return self.render(main_object, **kw)
 
 
