@@ -15,7 +15,6 @@ class Website(models.Model):
 
     _inherit = "website"
 
-    # XXX: `pages` does not play well w/ caching, gotta fix this
     @api.model
     @tools.ormcache('max_depth', 'pages', 'nav', 'type_ids', 'published')
     def get_nav_pages(self, max_depth=3, pages=None,
@@ -66,8 +65,6 @@ class Website(models.Model):
                                       type_ids=type_ids,
                                       published=published)
             )
-        # Find the best way to cache this? Or just rely on varnish & co.?
-        # Odoo dispatcher already do cache: let's see if this is enough!
         return result
 
     @api.model
