@@ -27,13 +27,13 @@ view_group_ids
 
 <template id="page_default" name="Page default">
     <t t-call="website.layout">
+      <t t-call="website_cms.mgmt_actions" />
       <t t-call="website_cms.page_default_content" />
     </t>
 </template>
 
 
 <template id="page_default_content" name="Page default content">
-  <t t-call="website_cms.mgmt_actions" />
 
   <t t-if="editable">
     <div t-field="main_object.description">
