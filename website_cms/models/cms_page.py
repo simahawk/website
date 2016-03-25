@@ -8,6 +8,7 @@ from openerp import models
 from openerp import fields
 from openerp import api
 from openerp import exceptions
+from openerp import tools
 from openerp.tools.translate import _
 from openerp.tools.translate import html_translate
 from openerp.addons.website.models.website import slug
@@ -528,6 +529,28 @@ class CMSPage(models.Model):
             order=order
         )
         return media
+
+    @api.model
+    def get_translations(self):
+        """Return translations for this page."""
+        return self._get_translations(page_id=self.id)
+
+    @tools.ormcache('page_id')
+    def _get_translations(self, page_id=None):
+        """Return all available translations for a page.
+
+        We assume that a page is translated when the name is.
+        """
+        query = """
+            SELECT lang,value FROM ir_translation
+            WHERE res_id={page_id}
+            AND state='translated'
+            AND type='model'
+            AND name='cms.page,name'
+        """.format(page_id=page_id)
+        self.env.cr.execute(query)
+        res = self.env.cr.fetchall()
+        return dict(res)
 
 
 class CMSPageType(models.Model):

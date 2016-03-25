@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+
+  <template
+    id="layout"
+    name="CMS layout"
+    inherit_id="website.layout">
+
+    <xpath expr="//head/t[@t-if='request and request.website_multilang and website']" position="replace">
+        <t t-call="website_cms.alternate_languages" />
+    </xpath>
+
+  </template>
+
+</odoo>

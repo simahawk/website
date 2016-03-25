@@ -3,6 +3,7 @@
 from openerp import http
 from openerp.http import request
 import werkzeug
+from werkzeug.exceptions import NotFound
 from openerp.tools.translate import _
 
 
@@ -104,6 +105,15 @@ class PageViewController(http.Controller, ContextAwareMixin):
             # for some reasons here we get an empty string
             # as value, and this breaks translation editor initialization :(
             kw['edit_translations'] = True
+
+        # handle translations switch
+        site = request.website
+        if site and 'edit_translations' not in kw \
+                and not site.default_lang_code == request.lang \
+                and not site.is_publisher():
+            # check if there's any translation for current page in request lang
+            if request.lang not in main_object.get_translations():
+                raise NotFound
         return self.render(main_object, **kw)
 
 

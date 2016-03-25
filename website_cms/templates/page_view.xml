@@ -4,9 +4,6 @@
   <data>
 
 
-view_group_ids
-
-
 <template id="mgmt_actions" name="Management actions">
   <div class="mgmt-actions" groups="website_cms.cms_manager">
     <div id="website_published_button">

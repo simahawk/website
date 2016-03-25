@@ -6,6 +6,7 @@ from openerp import models
 # from openerp import fields
 from openerp import api
 from openerp import tools
+from openerp.addons.web.http import request
 
 from openerp.addons.website_cms.utils import AttrDict
 
@@ -142,3 +143,20 @@ class Website(models.Model):
         """Return all available media categories."""
         return self.env['cms.media.category'].search(
             [('active', '=', active)])
+
+    def get_alternate_languages(self, cr, uid, ids,
+                                req=None, context=None,
+                                main_object=None):
+        """Override to drop not available translations."""
+        langs = super(Website, self).get_alternate_languages(
+            cr, uid, ids, req=req, context=context)
+
+        avail_langs = None
+        if main_object and main_object._name == 'cms.page':
+            # avoid building URLs for not translated contents
+            avail_transl = main_object.get_translations()
+            avail_langs = [x.split('_')[0] for x in avail_transl.iterkeys()]
+
+        if avail_langs is not None:
+            langs = [lg for lg in langs if lg['short'] in avail_langs]
+        return langs
