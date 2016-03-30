@@ -11,10 +11,10 @@ from openerp import exceptions
 from openerp import tools
 from openerp.tools.translate import _
 from openerp.tools.translate import html_translate
+from openerp.addons.base.ir.ir_ui_view import keep_query
 from openerp.addons.website.models.website import slug
 from openerp.addons.website.models.website import unslug
 from openerp.addons.website_cms.utils import AttrDict
-
 
 def to_slug(item):
     # avoid using diplay_name
@@ -419,12 +419,17 @@ class CMSPage(models.Model):
 
         if not base_url:
             # default to current page url, and drop /listing path if any
-            base_url = request.httprequest.url.split('/page')[0]
+            base_url = request.httprequest.path.split('/page')[0]
+
+        qstring = keep_query()
 
         def get_url(page_nr):
             if page_nr <= 1:
-                return base_url
-            _url = "%s/page/%s" % (base_url, page_nr)
+                _url = base_url
+            else:
+                _url = "{}/page/{}".format(base_url, page_nr)
+            if qstring:
+                _url += '?' + qstring
             return _url
 
         if url_getter is None:
@@ -464,7 +469,7 @@ class CMSPage(models.Model):
         })
         return paginated
 
-    def _paginate(self, all_items, page=1, step=10):
+    def paginate(self, all_items, page=1, step=10):
         """Prepare pagination."""
         total = len(all_items)
         start = (page and page - 1) or 0
@@ -477,13 +482,13 @@ class CMSPage(models.Model):
     def get_paginated_listing(self, page=0, step=10, **kw):
         """Get items for listing sliced for pagination."""
         all_items = self.get_listing(**kw)
-        return self._paginate(all_items, page=page, step=step)
+        return self.paginate(all_items, page=page, step=step)
 
     def get_paginated_media_listing(self, page=0, step=10, **kw):
         """Get items for listing sliced for pagination."""
         # XXX: shoul we merge this w/ above listing?
         all_items = self.get_media_listing(**kw)
-        return self._paginate(all_items, page=page, step=step)
+        return self.paginate(all_items, page=page, step=step)
 
     @api.model
     def get_media_listing(self, published=True,
