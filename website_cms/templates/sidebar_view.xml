@@ -20,7 +20,7 @@
   <div id="sidebar_content"
        t-field="main_object.sidebar_content"
        class="oe_structure"
-       contenteditable="true"
+       t-att-contenteditable="editable and 'true' or None"
        />
 
 </template>
