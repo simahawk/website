@@ -97,6 +97,13 @@ class PageViewController(http.Controller, ContextAwareMixin):
 
         Many optional arguments come from `kw` based on routing match above.
         """
+        site = request.website
+        # check published
+        # XXX: this is weird since it should be done by `website` module itself.
+        # Alternatively we can put this in our `secure model` route handler.
+        if not site.is_publisher() and not main_object.website_published:
+            raise NotFound
+
         if main_object.has_redirect():
             data = main_object.get_redirect_data()
             redirect = werkzeug.utils.redirect(data.url, data.status)
@@ -107,7 +114,6 @@ class PageViewController(http.Controller, ContextAwareMixin):
             kw['edit_translations'] = True
 
         # handle translations switch
-        site = request.website
         if site and 'edit_translations' not in kw \
                 and not site.default_lang_code == request.lang \
                 and not site.is_publisher():
