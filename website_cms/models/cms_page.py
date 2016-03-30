@@ -77,6 +77,10 @@ class CMSPage(models.Model):
         column1='from_id',
         column2='to_id',
     )
+    # XXX 2016-03-30: we are not using this anymore
+    # because we can use cms.media since a while.
+    # It might be useful for other purposes,
+    # let's keep it for a while.
     attachment_ids = fields.One2many(
         string='Attachments',
         inverse_name='res_id',

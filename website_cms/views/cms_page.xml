@@ -93,19 +93,6 @@
           </field>
         </page>
 
-        <page name="attachments" string="Attachments">
-          <field name="attachment_ids" nolabel="1">
-            <tree>
-              <field name="name" />
-              <field name="datas_fname" />
-              <field name="type" />
-              <field name="mimetype" />
-              <field name="create_uid" />
-              <field name="create_date" />
-            </tree>
-          </field>
-        </page>
-
         <page name="history" string="History">
           <label for="create_uid" string="Created on"/>
           <div name="creation_div">
