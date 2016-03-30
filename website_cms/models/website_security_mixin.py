@@ -32,7 +32,7 @@ class WebsiteSecurityMixin(models.AbstractModel):
     _description = "A mixin for protecting website content"
     # admin groups that bypass security checks
     _admin_groups = (
-        'base.group_website_designer',
+        'base.group_website_publisher',
     )
 
     view_group_ids = fields.Many2many(
@@ -41,6 +41,12 @@ class WebsiteSecurityMixin(models.AbstractModel):
         help=(u"Restrict `view` access to this item to specific groups. "
               u"No group means anybody can see it.")
     )
+
+    def _is_admin(self):
+        for gid in self._admin_groups:
+            if self.env.user.has_group(gid):
+                return True
+        return False
 
     def _check_user_groups(self, group_ids):
         """Check wheter current user matches given groups."""
@@ -101,7 +107,8 @@ class WebsiteSecurityMixin(models.AbstractModel):
     @api.model
     def _search(self, args, offset=0, limit=None,
                 order=None, count=False, access_rights_uid=None):
-        """Implement security check based on `view_group_ids`.
+        """Implement security check based on `website_published`
+        and `view_group_ids`.
 
         The goal is to hide items that current user cannot see
         in the frontend (like navigation, listings)
@@ -137,6 +144,11 @@ class WebsiteSecurityMixin(models.AbstractModel):
         Hence, we are trying to use the same mechanism
         for both cases.
         """
+        # if no editing rights, hide not published content
+        published_filter = any(['website_published' in x for x in args])
+        if not self._is_admin() and not published_filter:
+            args.append(('website_published', '=', True))
+
         res = super(WebsiteSecurityMixin, self)._search(
             args, offset=offset, limit=limit, order=order,
             count=count, access_rights_uid=access_rights_uid
