@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+import base64
+
 from openerp import http
 from openerp.http import request
 import werkzeug
@@ -14,11 +16,11 @@ class ContextAwareMixin(object):
     """
 
     # default template
-    _template = ''
+    template = ''
 
     def get_template(self, main_object, **kw):
         """Retrieve rendering template."""
-        template = self._template
+        template = self.template
 
         if getattr(main_object, 'view_id', None):
             template = main_object.view_id.key
@@ -89,7 +91,7 @@ PAGE_VIEW_ROUTES = [
 class PageViewController(http.Controller, ContextAwareMixin):
     """CMS page view controller."""
 
-    _template = 'website_cms.page_default'
+    template = 'website_cms.page_default'
 
     @http.route(PAGE_VIEW_ROUTES, type='http', auth='public', website=True)
     def view_page(self, main_object, **kw):
@@ -123,28 +125,69 @@ class PageViewController(http.Controller, ContextAwareMixin):
         return self.render(main_object, **kw)
 
 
-class PageCreateController(http.Controller, ContextAwareMixin):
-    """CMS page create controller."""
+class PageEditingMixin(ContextAwareMixin):
+    """CMS page editing controller."""
 
-    _template = 'website_cms.page_form'
+    form_name = ''
+    form_mode = ''
+    form_fields = ('name', 'description', )
+    form_file_fields = ('image', )
 
     def get_template(self, main_object, **kw):
         """Override to force template."""
-        return self._template
+        return self.template
 
-    def get_render_values(self, parent=None, **kw):
+    def load_defaults(self, main_object):
+        """Override to load default values."""
+        defaults = {}
+        for fname in self.form_fields:
+            defaults[fname] = getattr(main_object, fname)
+        for fname in self.form_file_fields:
+            defaults['has_' + fname] = bool(getattr(main_object, fname))
+        return defaults
+
+    def get_render_values(self, main_object, parent=None, **kw):
         """Override to preload values."""
-        values = {
-            'name': kw.get('name', 'New page title'),
-            'parent_id': parent and parent.id,
-            'website_published': False,
-        }
-        if parent:
-            values['form_action'] = parent.website_url + '/add-page'
-            for fname in ('type_id', 'view_id'):
-                fvalue = getattr(parent, 'sub_page_' + fname)
-                values[fname] = fvalue and fvalue.id or False
+        _super = super(PageEditingMixin, self)
+        values = _super.get_render_values(main_object, **kw)
+
+        base_url = '/cms'
+        if main_object:
+            base_url = main_object.website_url
+
+        name = request.params.get('name') or kw.get('name')
+        if not name:
+            name = _('Page title')
+
+        values.update({
+            'name': name,
+            'form_action': base_url + '/' + self.form_name,
+        })
+
+        values.update(self.load_defaults(main_object, **kw))
         return values
+
+
+class CreatePage(http.Controller, PageEditingMixin):
+    """CMS page create controller."""
+
+    form_name = 'add-page'
+    template = 'website_cms.page_form'
+
+    def load_defaults(self, main_object, **kw):
+        """Override to preload values."""
+        _super = super(CreatePage, self)
+        defaults = _super.load_defaults(main_object, **kw)
+
+        if main_object:
+            defaults['parent_id'] = main_object.id
+            defaults['form_action'] = \
+                main_object.website_url + '/' + self.form_name
+            for fname in ('type_id', 'view_id'):
+                fvalue = getattr(main_object, 'sub_page_' + fname)
+                defaults[fname] = fvalue and fvalue.id or False
+
+        return defaults
 
     @http.route([
         '/cms/add-page',
@@ -154,11 +197,48 @@ class PageCreateController(http.Controller, ContextAwareMixin):
     def add(self, parent=None, **kw):
         """Handle page add view and form submit."""
         if request.httprequest.method == 'GET':
-            # render form
             return self.render(parent, **kw)
+
         elif request.httprequest.method == 'POST':
             # handle form submission
-            values = self.get_render_values(parent=parent, **kw)
+            values = self.get_render_values(parent, **kw)
             new_page = request.env['cms.page'].create(values)
             url = new_page.website_url + '?enable_editor=1'
             return werkzeug.utils.redirect(url)
+
+
+class EditPage(http.Controller, PageEditingMixin):
+    """CMS page edit controller."""
+
+    form_name = 'edit-page'
+    template = 'website_cms.page_form'
+
+    def extract_values(self, request, main_object, **kw):
+        """Override to manipulate POST values."""
+        # TODO: sanitize user input and add validation!
+        if 'image' in kw:
+            field_value = kw.pop('image')
+            if hasattr(field_value, 'read'):
+                image_content = field_value.read()
+                image_content = base64.encodestring(image_content)
+            else:
+                image_content = field_value.split(',')[-1]
+            if kw.get('keep_image') != 'yes':
+                # empty or not, we want to replace it
+                kw['image'] = image_content
+        return kw
+
+    @http.route([
+        '/cms/<secure_model("cms.page"):main_object>/edit-page',
+        '/cms/<path:path>/<secure_model("cms.page"):main_object>/edit-page',
+    ], type='http', auth='user', methods=['GET', 'POST'], website=True)
+    def edit(self, main_object, **kw):
+        """Handle page edit view and form submit."""
+        if request.httprequest.method == 'GET':
+            # render form
+            return self.render(main_object, **kw)
+        elif request.httprequest.method == 'POST':
+            # handle form submission
+            values = self.extract_values(request, main_object, **kw)
+            main_object.write(values)
+            return werkzeug.utils.redirect(main_object.website_url)

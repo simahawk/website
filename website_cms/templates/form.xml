@@ -2,7 +2,13 @@
 <openerp>
     <data>
 
-<template id="page_form" name="CMS Add Page Form">
+<!-- TODO: load fields automatically based on form schema.
+
+Yes, ODOO has no form facilities in this regards, but we should have one ;)
+
+We load each field explicitely here for now.
+ -->
+<template id="page_form" name="CMS Page Form">
 
   <t t-call="website.layout">
     <t t-if="False">
@@ -16,20 +22,75 @@
 
       <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
 
-      <div class="form-group form-field o_website_form_required_custom">
+      <div class="form-group form-field mt8">
         <label class="col-md-3 col-sm-4 control-label" for="name">Name</label>
-        <div class="col-md-7 col-sm-8">
-          <input type="text"
-            class="form-control o_website_form_input"
-            name="name"
-            t-att-value="request.params.get('name', '')"
-            required="1"
-            />
-        </div>
+        <input type="text"
+          class="form-control o_website_form_input"
+          name="name"
+          t-att-value="name"
+          required="1"
+          />
       </div>
 
-      <div class="form-group">
-        <div class="col-md-offset-3 col-sm-offset-4 col-sm-8 col-md-7">
+      <div class="form-group form-field mt8">
+        <label class="col-md-3 col-sm-4 control-label" for="description">Description</label>
+        <textarea
+          class="form-control o_website_form_input"
+          name="description"
+          t-esc="description"></textarea>
+      </div>
+
+      <div class="form-group form-field mt8">
+        <label for="image">Image</label>
+        <input
+            type="file"
+            capture="camera"
+            accept="image/*"
+            id="image"
+            name="image"
+            class="form-control o_website_form_input"
+            />
+        <t t-if="has_image">
+          <div class="preview image-preview">
+            <img t-att-src="website.safe_image_url(main_object, 'image_thumb')" />
+          </div>
+          <t t-set="prefix" t-value="'image'" />
+          <div t-attf-id="#{prefix}_keepbox" class="row keepbox">
+              <div class="col-md-6">
+                  <div class="form-group">
+                      <input
+                          type="radio"
+                          t-attf-id="#{prefix}_keepcheck_yes"
+                          t-attf-name="#{prefix}_keepcheck"
+                          checked="1"
+                          value="yes"
+                          />
+                      <label
+                          t-attf-for="#{prefix}_keepcheck_yes">
+                          keep submitted
+                      </label>
+                  </div>
+                  <div class="form-group">
+                      <input
+                          type="radio"
+                          t-attf-id="#{prefix}_keepcheck_no"
+                          t-attf-name="#{prefix}_keepcheck"
+                          value="no"
+                          />
+                      <label
+                          t-attf-for="#{prefix}_keepcheck_no">
+                          replace submitted
+                      </label>
+                  </div>
+              </div>
+          </div>
+        </t>
+
+      </div>
+
+      <div class="form-group mt32">
+        <div class="pull-right">
+          <a class="btn btn-default" t-att-href="main_object.website_url">Cancel</a>
           <button type="submit" class="btn btn-primary">Submit</button>
         </div>
       </div>
