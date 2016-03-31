@@ -31,6 +31,7 @@
         "views/cms_media_category.xml",
         'views/website_menu.xml',
         # templates
+        "templates/assets.xml",
         "templates/misc.xml",
         "templates/layout.xml",
         "templates/actions.xml",
