@@ -125,10 +125,11 @@ class PageViewController(http.Controller, ContextAwareMixin):
         return self.render(main_object, **kw)
 
 
-class PageEditingMixin(ContextAwareMixin):
-    """CMS page editing controller."""
+class PageFormMixin(ContextAwareMixin):
+    """CMS page Form controller."""
 
     form_name = ''
+    form_title = ''
     form_mode = ''
     form_fields = ('name', 'description', )
     form_file_fields = ('image', )
@@ -140,6 +141,8 @@ class PageEditingMixin(ContextAwareMixin):
     def load_defaults(self, main_object):
         """Override to load default values."""
         defaults = {}
+        if not main_object:
+            return defaults
         for fname in self.form_fields:
             defaults[fname] = getattr(main_object, fname)
         for fname in self.form_file_fields:
@@ -148,7 +151,7 @@ class PageEditingMixin(ContextAwareMixin):
 
     def get_render_values(self, main_object, parent=None, **kw):
         """Override to preload values."""
-        _super = super(PageEditingMixin, self)
+        _super = super(PageFormMixin, self)
         values = _super.get_render_values(main_object, **kw)
 
         base_url = '/cms'
@@ -156,29 +159,33 @@ class PageEditingMixin(ContextAwareMixin):
             base_url = main_object.website_url
 
         name = request.params.get('name') or kw.get('name')
-        if not name:
-            name = _('Page title')
-
         values.update({
             'name': name,
             'form_action': base_url + '/' + self.form_name,
         })
 
         values.update(self.load_defaults(main_object, **kw))
+
+        # make sure we do not allow website builder Form
+        values['editable'] = values['translatable'] = False
+        # XXX: we should handle this
+        # values['errors'] = []
+        # values['status_message'] = ''
+        values['view'] = self
         return values
 
 
-class CreatePage(http.Controller, PageEditingMixin):
+class CreatePage(http.Controller, PageFormMixin):
     """CMS page create controller."""
 
     form_name = 'add-page'
+    form_title = _('Add page')
+    form_mode = 'create'
     template = 'website_cms.page_form'
 
     def load_defaults(self, main_object, **kw):
         """Override to preload values."""
-        _super = super(CreatePage, self)
-        defaults = _super.load_defaults(main_object, **kw)
-
+        defaults = {}
         if main_object:
             defaults['parent_id'] = main_object.id
             defaults['form_action'] = \
@@ -207,10 +214,12 @@ class CreatePage(http.Controller, PageEditingMixin):
             return werkzeug.utils.redirect(url)
 
 
-class EditPage(http.Controller, PageEditingMixin):
+class EditPage(http.Controller, PageFormMixin):
     """CMS page edit controller."""
 
     form_name = 'edit-page'
+    form_title = _('Edit page')
+    form_mode = 'write'
     template = 'website_cms.page_form'
 
     def extract_values(self, request, main_object, **kw):
@@ -241,4 +250,8 @@ class EditPage(http.Controller, PageEditingMixin):
             # handle form submission
             values = self.extract_values(request, main_object, **kw)
             main_object.write(values)
-            return werkzeug.utils.redirect(main_object.website_url)
+            query = {
+                'status_message': _(u'Page updated')
+            }
+            return http.local_redirect(main_object.website_url,
+                                       query=query)

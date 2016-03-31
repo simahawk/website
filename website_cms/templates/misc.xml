@@ -24,6 +24,7 @@
 
   <template id="mgmt_actions" name="Management actions">
     <div class="mgmt-actions" groups="website_cms.cms_manager">
+
       <div id="website_published_button">
         <t t-call="website.publish_management">
           <t t-set="object" t-value="main_object"/>
@@ -87,6 +88,21 @@
               </t>
             </p>
           </div>
+        </div>
+      </div>
+    </t>
+  </template>
+
+
+  <template id="status_message" name="CMS status_message">
+    <!-- TODO: handle various states (success, info, error) -->
+    <t t-if="request.params.get('status_message')">
+      <div class="container status_message">
+        <div class="alert alert-success alert-dismissible" role="alert">
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&amp;times;</span>
+          </button>
+          <t t-esc="request.params.get('status_message')" />
         </div>
       </div>
     </t>

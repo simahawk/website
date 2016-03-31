@@ -14,6 +14,9 @@ We load each field explicitely here for now.
     <t t-if="False">
       # we can override default action via form values
     </t>
+
+    <t t-set="title" t-value="view.form_title" />
+
     <form
       t-att-action="form_action or '/cms/add-page'"
       method="POST"
@@ -90,7 +93,7 @@ We load each field explicitely here for now.
 
       <div class="form-group mt32">
         <div class="pull-right">
-          <a class="btn btn-default" t-att-href="main_object.website_url">Cancel</a>
+          <a class="btn btn-default" t-att-href="request.httprequest.referrer">Cancel</a>
           <button type="submit" class="btn btn-primary">Submit</button>
         </div>
       </div>

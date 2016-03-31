@@ -13,4 +13,10 @@
 
   </template>
 
+  <template id="add_status_message" inherit_id="website.layout">
+    <xpath expr="//main" position="before">
+      <t t-call="website_cms.status_message" />
+    </xpath>
+  </template>
+
 </odoo>
