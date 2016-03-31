@@ -96,13 +96,14 @@
 
   <template id="status_message" name="CMS status_message">
     <!-- TODO: handle various states (success, info, error) -->
-    <t t-if="request.params.get('status_message')">
+    <t t-if="request.session.get('status_message')">
+      <t t-set="status_message" t-value="request.session.pop('status_message')" />
       <div class="container status_message">
-        <div class="alert alert-success alert-dismissible" role="alert">
+        <div t-attf-class="alert alert-#{status_message['type']} alert-dismissible" role="alert">
           <button type="button" class="close" data-dismiss="alert" aria-label="Close">
             <span aria-hidden="true">&amp;times;</span>
           </button>
-          <t t-esc="request.params.get('status_message')" />
+          <strong t-esc="status_message['title']"></strong>&amp;nbsp; <t t-esc="status_message['msg']" />
         </div>
       </div>
     </t>

@@ -133,12 +133,14 @@ class PageFormMixin(ContextAwareMixin):
     form_mode = ''
     form_fields = ('name', 'description', )
     form_file_fields = ('image', )
+    action_status = 'success'
+    status_message_success = ''
 
     def get_template(self, main_object, **kw):
         """Override to force template."""
         return self.template
 
-    def load_defaults(self, main_object):
+    def load_defaults(self, main_object, **kw):
         """Override to load default values."""
         defaults = {}
         if not main_object:
@@ -174,6 +176,24 @@ class PageFormMixin(ContextAwareMixin):
         values['view'] = self
         return values
 
+    def add_status_message(self, status_message):
+        """Inject status message in session."""
+        request.session['status_message'] = status_message
+
+    def before_post_action(self):
+        """Perform actions before form handling."""
+        # # cleanup status messages
+        if 'status_message' in request.session:
+            del request.session['status_message']
+
+    def after_post_action(self):
+        """Perform actions after form handling."""
+        # add status message if any
+        status_message = getattr(self,
+                                 'status_message_' + self.action_status, None)
+        if status_message:
+            self.add_status_message(status_message)
+
 
 class CreatePage(http.Controller, PageFormMixin):
     """CMS page create controller."""
@@ -182,6 +202,11 @@ class CreatePage(http.Controller, PageFormMixin):
     form_title = _('Add page')
     form_mode = 'create'
     template = 'website_cms.page_form'
+    status_message_success = {
+        'type': 'info',
+        'title': 'Info',
+        'msg': _(u'Page created.'),
+    }
 
     def load_defaults(self, main_object, **kw):
         """Override to preload values."""
@@ -207,10 +232,12 @@ class CreatePage(http.Controller, PageFormMixin):
             return self.render(parent, **kw)
 
         elif request.httprequest.method == 'POST':
+            self.before_post_action()
             # handle form submission
             values = self.get_render_values(parent, **kw)
             new_page = request.env['cms.page'].create(values)
             url = new_page.website_url + '?enable_editor=1'
+            self.after_post_action()
             return werkzeug.utils.redirect(url)
 
 
@@ -221,6 +248,11 @@ class EditPage(http.Controller, PageFormMixin):
     form_title = _('Edit page')
     form_mode = 'write'
     template = 'website_cms.page_form'
+    status_message_success = {
+        'type': 'info',
+        'title': 'Info',
+        'msg': _(u'Page updated.'),
+    }
 
     def extract_values(self, request, main_object, **kw):
         """Override to manipulate POST values."""
@@ -247,11 +279,9 @@ class EditPage(http.Controller, PageFormMixin):
             # render form
             return self.render(main_object, **kw)
         elif request.httprequest.method == 'POST':
+            self.before_post_action()
             # handle form submission
             values = self.extract_values(request, main_object, **kw)
             main_object.write(values)
-            query = {
-                'status_message': _(u'Page updated')
-            }
-            return http.local_redirect(main_object.website_url,
-                                       query=query)
+            self.after_post_action()
+            return http.local_redirect(main_object.website_url)
