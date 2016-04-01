@@ -39,4 +39,7 @@
         "templates/sidebar_view.xml",
         "templates/form.xml",
     ],
+    'external_dependencies': {
+        'python': ['requests', ],
+    },
 }

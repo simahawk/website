@@ -11,6 +11,8 @@ from openerp.addons.website.models.website import slug
 from openerp.addons.website_cms.utils import IMAGE_TYPES
 from openerp.addons.website_cms.utils import VIDEO_TYPES
 from openerp.addons.website_cms.utils import AUDIO_TYPES
+from openerp.addons.website_cms.utils import download_image_from_url
+from openerp.addons.website_cms.utils import guess_mimetype
 
 
 class CMSMedia(models.Model):
@@ -176,6 +178,22 @@ class CMSMedia(models.Model):
             vals['res_id'] = vals.get('page_id')
             vals['res_model'] = vals.get('page_id') and 'cms.page'
         return super(CMSMedia, self).write(vals)
+
+    @api.model
+    def is_image(self):
+        """Whether this is an image."""
+        if self.mimetype:
+            return self.mimetype in IMAGE_TYPES
+        # mimetype is computed on create
+        if self.url:
+            return guess_mimetype(self.url) in IMAGE_TYPES
+
+    @api.model
+    def is_video(self):
+        """Whether this is a video."""
+        return self.mimetype in VIDEO_TYPES
+
+    # TODO: we should use services like http://noembed.com
 
 
 class CMSMediaCategory(models.Model):
