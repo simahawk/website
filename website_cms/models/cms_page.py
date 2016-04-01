@@ -160,6 +160,18 @@ class CMSPage(models.Model):
               u"for current page. "),
     )
 
+    @api.multi
+    def unlink(self):
+        """Override to prevent deletion of pages w/ media attached."""
+        # look for attached media
+        # and prevent deletion
+        media = self.env['cms.media'].search([('res_id', 'in', self.ids)])
+        if media:
+            msg = _(u"You are trying to delete a page "
+                    u"that has media items attached to it!")
+            raise exceptions.Warning(msg)
+        return super(CMSPage, self).unlink()
+
     @api.model
     def _domain_parent_id(self):
         # make sure we don't put sub-pages into news
