@@ -1,5 +1,5 @@
 odoo.define('website_cms.new_page', function (require) {
-"use strict";
+    "use strict";
 
     var core = require('web.core');
     var base = require('web_editor.base');

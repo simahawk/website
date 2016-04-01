@@ -1,59 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<openerp>
-  <data>
+<odoo>
 
-
-<template id="mgmt_actions" name="Management actions">
-  <div class="mgmt-actions" groups="website_cms.cms_manager">
-    <div id="website_published_button">
-      <t t-call="website.publish_management">
-        <t t-set="object" t-value="main_object"/>
-        <t t-set="publish_edit" t-value="True"/>
-        <t t-set="action" t-value="action or ''"/>
-      </t>
-    </div>
-    <t t-if="main_object.view_group_ids">
-      <small class="icon-user group-restrict-info danger help pull-right"
-             style="cursor:help"
-             title="Groups restrictions applied"></small>
-    </t>
-  </div>
-</template>
-
-
-<template id="page_default" name="Page default">
+  <template id="page_default" name="Page default">
     <t t-call="website.layout">
       <t t-call="website_cms.mgmt_actions" />
       <t t-call="website_cms.page_default_content" />
     </t>
-</template>
+  </template>
 
 
-<template id="page_default_content" name="Page default content">
+  <template id="page_default_content" name="Page default content">
 
-  <t t-if="editable">
-    <div t-field="main_object.description">
-      No description for this page yet. You see this because you can edit this page.
-    </div>
-  </t>
-  <t t-if="not editable and main_object.description">
-    <div t-esc="main_object.description">Description of the page</div>
-  </t>
+    <t t-if="editable">
+      <div t-field="main_object.description">
+        No description for this page yet. You see this because you can edit this page.
+      </div>
+    </t>
+    <t t-if="not editable and main_object.description">
+      <div t-esc="main_object.description">Description of the page</div>
+    </t>
 
-  <div id="object_body"
-       t-field="main_object.body"
-       class="oe_structure"
-       />
+    <div id="object_body"
+         t-field="main_object.body"
+         class="oe_structure"
+         />
 
-</template>
+  </template>
 
-<!-- enable view for cms -->
-<record id="website_cms.page_default" model="ir.ui.view">
-  <field name="cms_view" eval="1" />
-</record>
+  <!-- enable view for cms -->
+  <record id="website_cms.page_default" model="ir.ui.view">
+    <field name="cms_view" eval="1" />
+  </record>
 
-  </data>
-</openerp>
-
+</odoo>
 

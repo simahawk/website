@@ -47,23 +47,14 @@ class WebsiteImageMixin(models.AbstractModel):
         """Calculate resized images."""
         for record in self:
             if record.image:
-                record.image_medium = self.crop_image(record.image)
-                record.image_thumb = self.crop_image(record.image,
-                                                     thumbnail_ratio=6)
+                record.image_medium = \
+                    image_tools.image_resize_image_big(record.image)
+                record.image_thumb = \
+                    image_tools.image_resize_image_medium(record.image,
+                                                          size=(128, 128))
             else:
                 record.image_medium = False
-                record.iamge_thumb = False
-
-    @api.model
-    def crop_image(self, image, type_='top',
-                   ratio=(4, 3), thumbnail_ratio=4):
-        """Crop image fields."""
-        return image_tools.crop_image(
-            image,
-            type=type_,
-            ratio=ratio,
-            thumbnail_ratio=thumbnail_ratio
-        )
+                record.image_thumb = False
 
 
 class WebsiteOrderableMixin(models.AbstractModel):

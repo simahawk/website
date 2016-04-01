@@ -16,8 +16,9 @@ from openerp.addons.website.models.website import slug
 from openerp.addons.website.models.website import unslug
 from openerp.addons.website_cms.utils import AttrDict
 
+
 def to_slug(item):
-    # avoid using diplay_name
+    """Force usage of item.name."""
     value = (item.id, item.name)
     return slug(value)
 
