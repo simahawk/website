@@ -180,10 +180,11 @@ class CMSMedia(models.Model):
         return super(CMSMedia, self).write(vals)
 
     @api.model
-    def is_image(self):
+    def is_image(self, mimetype=None):
         """Whether this is an image."""
-        if self.mimetype:
-            return self.mimetype in IMAGE_TYPES
+        mimetype = mimetype or self.mimetype
+        if mimetype:
+            return mimetype in IMAGE_TYPES
         # mimetype is computed on create
         if self.url:
             return guess_mimetype(self.url) in IMAGE_TYPES
