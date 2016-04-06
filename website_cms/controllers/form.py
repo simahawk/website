@@ -82,7 +82,10 @@ class PageFormMixin(ContextAwareMixin):
 
     def add_status_message(self, status_message):
         """Inject status message in session."""
-        request.session['status_message'] = status_message
+        try:
+            request.session['status_message'].append(status_message)
+        except KeyError:
+            request.session['status_message'] = [status_message, ]
 
     def before_post_action(self):
         """Perform actions before form handling."""
@@ -119,7 +122,7 @@ class CreatePage(http.Controller, PageFormMixin):
     template = 'website_cms.page_form'
     status_message_success = {
         'type': 'info',
-        'title': 'Info',
+        'title': 'Info:',
         'msg': _(u'Page created.'),
     }
 
@@ -158,6 +161,20 @@ class CreatePage(http.Controller, PageFormMixin):
             self.after_post_action()
             return werkzeug.utils.redirect(url)
 
+    def after_post_action(self):
+        """Add extra msg in case description is missing."""
+        super(CreatePage, self).after_post_action()
+        msg = {
+            'type': 'warning',
+            'title': 'Note:',
+            'msg': _(u'No description for this page yet. '
+                     u'You see this because you can edit this page.'
+                     u'A brief description can be useful '
+                     u'to show a summary of this content '
+                     u'in many views (like listing or homepage).'),
+        }
+        self.add_status_message(msg)
+
 
 class EditPage(http.Controller, PageFormMixin):
     """CMS page edit controller."""
@@ -168,7 +185,7 @@ class EditPage(http.Controller, PageFormMixin):
     template = 'website_cms.page_form'
     status_message_success = {
         'type': 'info',
-        'title': 'Info',
+        'title': 'Info:',
         'msg': _(u'Page updated.'),
     }
 
@@ -189,3 +206,17 @@ class EditPage(http.Controller, PageFormMixin):
             main_object.write(values)
             self.after_post_action()
             return http.local_redirect(main_object.website_url)
+
+    def after_post_action(self):
+        """Add extra msg in case description is missing."""
+        super(EditPage, self).after_post_action()
+        msg = {
+            'type': 'warning',
+            'title': 'Note:',
+            'msg': _(u'No description for this page yet. '
+                     u'You see this because you can edit this page. '
+                     u'A brief description can be useful '
+                     u'to show a summary of this content '
+                     u'in many views (like listing or homepage).'),
+        }
+        self.add_status_message(msg)
