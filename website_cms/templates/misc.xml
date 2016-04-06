@@ -32,7 +32,7 @@
           <t t-set="action" t-value="action or ''"/>
         </t>
       </div>
-      <t t-if="main_object.view_group_ids">
+      <t t-if="website.safe_hasattr(main_object, 'view_group_ids')">
         <small class="icon-user group-restrict-info danger help pull-right"
                style="cursor:help"
                title="Groups restrictions applied"></small>

@@ -160,3 +160,22 @@ class Website(models.Model):
         if avail_langs is not None:
             langs = [lg for lg in langs if lg['short'] in avail_langs]
         return langs
+
+    def safe_hasattr(self, item, attr):
+        """Return true if given item has given attr.
+
+        The following does not work in templates:
+
+        <t t-if="main_object and
+            getattr(main_object, 'sidebar_view_ids', None)">
+        <t t-if="False">
+          main_object.sidebar_view_ids => throws an error
+          since there's no safe "hasattr" when evaluating
+
+          QWebException: "'NoneType' object is not callable" while evaluating
+          "main_object and getattr(main_object, 'sidebar_view_ids', None)"
+        </t>
+
+        evaluating `hasattr` or `getattr` in template fails :S
+        """
+        return hasattr(item, attr)
