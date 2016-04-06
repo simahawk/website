@@ -19,4 +19,10 @@
     </xpath>
   </template>
 
+  <template id="add_mgmt_actions" inherit_id="website.layout">
+    <xpath expr="//main" position="before">
+      <t t-call="website_cms.mgmt_actions" />
+    </xpath>
+  </template>
+
 </odoo>
