@@ -20,12 +20,12 @@ We load each field explicitely here for now.
     <form
       t-att-action="form_action or '/cms/add-page'"
       method="POST"
-      class="container-fluid mt32"
+      t-attf-class="container-fluid mt32 page-form #{view.form_mode}-mode"
       enctype="multipart/form-data">
 
       <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
 
-      <div class="form-group form-field mt8">
+      <div class="form-group form-field mt8 field-name">
         <label class="col-md-3 col-sm-4 control-label" for="name">Name</label>
         <input type="text"
           class="form-control o_website_form_input"
@@ -35,16 +35,22 @@ We load each field explicitely here for now.
           />
       </div>
 
-      <div class="form-group form-field mt8">
+      <div class="form-group form-field mt8 field-description">
         <label class="col-md-3 col-sm-4 control-label" for="description">Description</label>
         <textarea
           class="form-control o_website_form_input"
           name="description"
           t-esc="description"></textarea>
+        <p class="help-block">
+          Description might be useful in many views, especially listing views
+          to show a brief summary of the content.<br />
+          This image might not be used in the view of the item,
+          this will depend on you website design.
+        </p>
       </div>
 
-      <div class="form-group form-field mt8">
-        <label for="image">Image</label>
+      <div class="form-group form-field mt8 field-image">
+        <label class="col-md-3 col-sm-4 control-label" for="image">Lead image</label>
         <input
             type="file"
             capture="camera"
@@ -53,8 +59,14 @@ We load each field explicitely here for now.
             name="image"
             class="form-control o_website_form_input"
             />
+        <p class="help-block">
+          This image could be used for landing pages and listing views
+          to present a content with a specific image. <br />
+          This image might not be used in the view of the item,
+          this will depend on you website design.
+        </p>
         <t t-if="has_image">
-          <div class="preview image-preview">
+          <div class="preview image-preview mt8">
             <img t-att-src="website.safe_image_url(main_object, 'image_thumb')" />
           </div>
           <t t-set="prefix" t-value="'image'" />
