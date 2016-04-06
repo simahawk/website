@@ -393,7 +393,7 @@ class CMSPage(models.Model):
         else:
             search_args.append(('path', '=like', path + '%'))
 
-        # use specifi `published` items but bypass it if manager
+        # use specific `published` items but bypass it if manager
         if published is not None and \
                 not self.env.user.has_group('website_cms.cms_manager'):
             search_args.append(('website_published', '=', published))
@@ -407,7 +407,7 @@ class CMSPage(models.Model):
             types_ids = [self.env.ref(x).id for x in types_ref]
 
         types_ids = types_ids or (
-            item.list_types_ids and item.list_types_ids._ids)
+            item.list_types_ids and item.list_types_ids.ids)
 
         if types_ids:
             search_args.append(
@@ -420,7 +420,8 @@ class CMSPage(models.Model):
         )
         return pages
 
-    def pager(self, total, page=1, step=10, scope=5, base_url='', url_getter=None):
+    def pager(self, total, page=1, step=10,
+              scope=5, base_url='', url_getter=None):
         """Custom pager implementation."""
         # Compute Pager
         page_count = int(math.ceil(float(total) / step))
@@ -533,7 +534,10 @@ class CMSPage(models.Model):
             search_args.append(('res_id', '=', item.id))
         else:
             search_args.append(('path', '=like', path + '%'))
-        if published is not None:
+
+        # use specific `published` items but bypass it if manager
+        if published is not None and \
+                not self.env.user.has_group('website_cms.cms_manager'):
             search_args.append(('website_published', '=', published))
 
         if category is not None:

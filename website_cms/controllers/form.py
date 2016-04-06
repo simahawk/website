@@ -168,7 +168,7 @@ class CreatePage(http.Controller, PageFormMixin):
             'type': 'warning',
             'title': 'Note:',
             'msg': _(u'No description for this page yet. '
-                     u'You see this because you can edit this page.'
+                     u'You see this because you can edit this page. '
                      u'A brief description can be useful '
                      u'to show a summary of this content '
                      u'in many views (like listing or homepage).'),

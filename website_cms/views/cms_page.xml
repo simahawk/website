@@ -106,12 +106,11 @@
           </div>
         </page>
 
-        <!-- <page name="listing" string="Listing">
+        <page name="listing" string="Listing">
           <group name="main_listing">
-            <separator string="Types to list" colspan="4" />
-            <field name="list_types_ids" nolabel="1" />
+            <field name="list_types_ids" />
           </group>
-        </page> -->
+        </page>
 
         <!-- <page name="sidebar-stuff" string="Sidebar content">
           <group name="sidebar">
