@@ -2,6 +2,7 @@
 
 from openerp import models
 from openerp import fields
+from openerp import api
 from openerp.addons.web.http import request
 from openerp.addons.website.models.website import url_for as url_for_orig
 
@@ -33,7 +34,11 @@ class IRUIView(models.Model):
         help=u"This view will be available as a CMS sidebar view."
     )
 
-    def _prepare_qcontext(self, cr, uid, context=None):
-        qcontext = super(IRUIView, self)._prepare_qcontext(cr, uid, context=context)
+    @api.model
+    def _prepare_qcontext(self):
+        """Override to inject our custom rendering variables."""
+        qcontext = super(IRUIView, self)._prepare_qcontext()
         qcontext['url_for'] = url_for
+        qcontext['is_cms_manager'] = \
+            self.env.user.has_group('website_cms.cms_manager')
         return qcontext

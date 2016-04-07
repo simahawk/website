@@ -95,12 +95,13 @@ class CMSPage(models.Model):
     type_id = fields.Many2one(
         string='Page type',
         comodel_name='cms.page.type',
-        default=lambda self: self._default_type()
+        default=lambda self: self._default_type_id()
     )
     view_id = fields.Many2one(
         string='View',
         comodel_name='ir.ui.view',
         domain=lambda self: VIEW_DOMAIN,
+        default=lambda self: self._default_view_id()
     )
     sub_page_type_id = fields.Many2one(
         string='Default page type for sub pages',
@@ -191,9 +192,14 @@ class CMSPage(models.Model):
             )
 
     @api.model
-    def _default_type(self):
+    def _default_type_id(self):
         page_type = self.env.ref('website_cms.default_page_type')
         return page_type and page_type.id or False
+
+    @api.model
+    def _default_view_id(self):
+        page_view = self.env.ref('website_cms.page_default')
+        return page_view and page_view.id or False
 
     @api.model
     def build_public_url(self, item):
