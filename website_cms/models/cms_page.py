@@ -162,6 +162,22 @@ class CMSPage(models.Model):
     )
 
     @api.multi
+    def write(self, vals):
+        """Make sure to refresh website nav cache."""
+        self.ensure_one()
+        if 'nav_include' in vals:
+            self.env['website'].clear_caches()
+        return super(CMSPage, self).write(vals)
+
+    @api.model
+    def create(self, vals):
+        """Make sure to refresh website nav cache."""
+        res = super(CMSPage, self).create(vals)
+        if 'nav_include' in vals:
+            self.env['website'].clear_caches()
+        return res
+
+    @api.multi
     def unlink(self):
         """Override to prevent deletion of pages w/ media attached."""
         # look for attached media

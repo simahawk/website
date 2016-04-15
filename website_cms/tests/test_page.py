@@ -227,3 +227,10 @@ class TestPage(common.TransactionCase):
     def test_permissions(self):
         # TODO
         pass
+
+    def test_nav(self):
+        # this must work also when nav is cached
+        website = self.env['website'].search([])[0]
+        self.assertEqual(len(website.get_nav_pages()), 0)
+        self.page.nav_include = True
+        self.assertEqual(len(website.get_nav_pages()), 1)
