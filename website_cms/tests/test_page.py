@@ -214,6 +214,7 @@ class TestPage(common.TransactionCase):
         self.assertEqual(
             len(container.get_listing(nav=False, published=None)), 3
         )
+        # restore manager group
         if not self.env.user.has_group('website_cms.cms_manager'):
             self.env.user.write({'groups_id': [(4, cms_mngr_group.id)]})
 
