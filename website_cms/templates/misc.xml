@@ -114,4 +114,41 @@
     </t>
   </template>
 
+
+  <template id="context_nav_horiz" name="CMS horizontal context nav">
+    <t t-if="False">
+        @param: ``container``: the page that contains the menu items.
+          Defaults to current page ``main_object``
+        @param: ``active_id``: current active item id
+        @param: ``nav_extra_klass``: add extra css classes to carousel wrapper
+    </t>
+    <t t-set="container" t-value="container or main_object" />
+    <t t-set="active_id" t-value="active_id or None" />
+    <t t-set="nav_items" t-value="container.get_listing()" />
+    <t t-if="nav_items">
+      <ul t-attf-class="nav nav-pills #{nav_extra_klass}">
+        <t t-foreach="nav_items" t-as="nav_item">
+          <t t-set="item_klass"
+             t-value="nav_item.id == active_id and 'active' or ''" />
+          <t t-set="item_klass"
+             t-value="item_klass + (nav_item.website_published and ' state-published' or '')" />
+          <li role="presentation" t-att-class="item_klass">
+            <a t-att-href="nav_item.website_url"
+               t-att-title="nav_item.description or nav_item.name">
+              <t t-esc="nav_item.name">Item</t>
+            </a>
+          </li>
+        </t>
+      </ul>
+    </t>
+  </template>
+
+
+  <template id="context_nav_vert" name="CMS vertical context nav">
+    <t t-call="website_cms.context_nav_horiz">
+      <t t-set="nav_extra_klass" t-value="'nav-stacked'" />
+    </t>
+  </template>
+
+
 </odoo>

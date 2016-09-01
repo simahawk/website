@@ -69,8 +69,8 @@ with their preview image.
 You can select it via backend as "Page default listing".
 
 
-Include page informations
-=========================
+Include page information
+========================
 
 The views mentioned above use basic markup for including page's info.
 Here is a brief summary.
@@ -118,11 +118,21 @@ Include basic listing::
         </li>
     </t>
 
+Include pills navigation, horizontal::
+
+    <t t-call="website_cms.context_nav_horiz" />
+
+or vertical::
+
+    <t t-call="website_cms.context_nav_vert" />
+
+
 .. note::
 
     Be aware that
 
     - controlling "contenteditable" attribute based on "editable" variable is done to avoid browsers to make the item editable without Odoo editor.
+
 
 
 Management actions
@@ -192,3 +202,8 @@ So, first you define the template as usual and then you activate it with 3 simpl
 Activating the flag is required to make the view appear among available cms views on the cms page.
 
 The content of the template can be whatever you want and you can use one or more of the above mentioned templates into it.
+
+In the template among other variables you have:
+
+* ``main_object``: the current page instance
+* ``parent``: the parent page if main object is child page

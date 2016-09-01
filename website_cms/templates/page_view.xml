@@ -2,29 +2,6 @@
 
 <odoo>
 
-  <template id="page_default" name="Page default">
-    <t t-call="website.layout">
-      <div class="container">
-        <t t-call="website_cms.page_default_content">
-          <t t-set="show_name" t-value="False" />
-          <t t-set="show_description" t-value="False" />
-        </t>
-      </div>
-    </t>
-  </template>
-
-  <template id="page_default_with" name="Page default with title and descr">
-    <t t-call="website.layout">
-      <div class="container">
-        <t t-call="website_cms.page_default_content">
-          <t t-set="show_name" t-value="True" />
-          <t t-set="show_description" t-value="True" />
-        </t>
-      </div>
-    </t>
-  </template>
-
-
   <template id="page_default_content" name="Page default content">
     <t t-if="show_name">
       <h1 id="object_name"
@@ -42,6 +19,30 @@
          class="oe_structure"
          t-att-contenteditable="editable and 'true' or None"
          />
+  </template>
+
+
+  <template id="page_default" name="Page default">
+    <t t-call="website.layout">
+      <div class="container">
+        <t t-call="website_cms.page_default_content">
+          <t t-set="show_name" t-value="False" />
+          <t t-set="show_description" t-value="False" />
+        </t>
+      </div>
+    </t>
+  </template>
+
+
+  <template id="page_default_with" name="Page default with title and descr">
+    <t t-call="website.layout">
+      <div class="container">
+        <t t-call="website_cms.page_default_content">
+          <t t-set="show_name" t-value="True" />
+          <t t-set="show_description" t-value="True" />
+        </t>
+      </div>
+    </t>
   </template>
 
   <!-- enable view for cms -->
@@ -76,7 +77,6 @@
               <t t-foreach="listing_items" t-as="item">
                 <t t-set="preview_url" t-value="website.safe_image_url(item, 'image_thumb')" />
                 <li class="list-group-item">
-
                   <a class="item-link"
                      t-att-title="item.description or item.name"
                      t-att-href="item.website_url">
