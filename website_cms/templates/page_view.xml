@@ -72,7 +72,7 @@
               <p class="no-items">Sorry, no items to list yet.</p>
             </t>
 
-            <ul class="list-grpup">
+            <ul class="list-group">
               <t t-foreach="listing_items" t-as="item">
                 <t t-set="preview_url" t-value="website.safe_image_url(item, 'image_thumb')" />
                 <li class="list-group-item">
