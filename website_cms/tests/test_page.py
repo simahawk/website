@@ -190,6 +190,12 @@ class TestPage(common.TransactionCase):
             'News 1'
         )
 
+        # `website_cms.cms_manager` group bypasses published state
+        # let's drop it temporarely to avoid this.
+        cms_mngr_group = self.env.ref('website_cms.cms_manager')
+        if self.env.user.has_group('website_cms.cms_manager'):
+            self.env.user.write({'groups_id': [(3, cms_mngr_group.id)]})
+
         # published/not published
         news[3].website_published = False
         news[4].website_published = False
@@ -208,6 +214,8 @@ class TestPage(common.TransactionCase):
         self.assertEqual(
             len(container.get_listing(nav=False, published=None)), 3
         )
+        if not self.env.user.has_group('website_cms.cms_manager'):
+            self.env.user.write({'groups_id': [(4, cms_mngr_group.id)]})
 
         # by type refs
         root_listing = self.model.get_listing(
