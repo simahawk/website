@@ -17,7 +17,15 @@ Available addons
 ----------------
 addon | version | summary
 --- | --- | ---
+[website_anchor_smooth_scroll](website_anchor_smooth_scroll/) | 9.0.1.0.0 | Replace default behavior for internal links (anchor only) with smooth scroll
 [website_blog_mgmt](website_blog_mgmt/) | 9.0.1.0.0 | Website blog Management
+[website_crm_recaptcha](website_crm_recaptcha/) | 9.0.1.0.0 | Provides a ReCaptcha validation in Website Contact Form
+[website_field_autocomplete](website_field_autocomplete/) | 9.0.1.0.1 | Provides an autocomplete field for Website on any model
+[website_form_recaptcha](website_form_recaptcha/) | 9.0.1.0.0 | Provides a ReCaptcha field for Website Forms
+[website_legal_page](website_legal_page/) | 9.0.1.0.0 | Website Legal Page
+[website_no_crawler](website_no_crawler/) | 9.0.1.0.0 | Disables robots.txt for indexing by webcrawlers like Google
+[website_portal_v10](website_portal_v10/) | 9.0.1.0.0 | Account Management Frontend for your Customers
+[website_seo_redirection](website_seo_redirection/) | 9.0.1.0.0 | Redirect any controller to the URL of your dreams
 
 Unported addons
 ---------------
@@ -32,12 +40,9 @@ addon | version | summary
 [website_event_register_free](website_event_register_free/) | 8.0.1.0.0 (unported) | Avoid shopping chart when registering for free events
 [website_event_register_free_with_sale](website_event_register_free_with_sale/) | 8.0.1.0.0 (unported) | Combine free and paid tickets on events
 [website_hr_department](website_hr_department/) | 8.0.0.1.0 (unported) | Display the structure of your departments and their members.
-[website_legal_page](website_legal_page/) | 8.0.1.0.0 (unported) | Website legal page
 [website_logo](website_logo/) | 8.0.1.0.0 (unported) | Website company logo
 [website_menu_by_user_status](website_menu_by_user_status/) | 8.0.1.1.0 (unported) | Allow to manage the display of website.menus
 [website_menu_multilang](website_menu_multilang/) | 8.0.0.1.0 (unported) | Website Menu Multilanguage
-[website_no_crawler](website_no_crawler/) | 8.0.1.0.0 (unported) | Disables robots.txt for indexing by webcrawlers like Google
-[website_portal](website_portal/) | 8.0.1.0.0 (unported) | Account Management Frontend for your Customers
 [website_sale_collapse_categories](website_sale_collapse_categories/) | 8.0.1.0.0 (unported) | Collapsible product categories in website shop
 [website_sale_order_company](website_sale_order_company/) | 8.0.1.0.0 (unported) | Set order company according to products company
 [website_sale_unsaleable_options](website_sale_unsaleable_options/) | 8.0.1.0.0 (unported) | Prevent optional products to be sold singularly
