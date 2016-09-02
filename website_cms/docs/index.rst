@@ -18,7 +18,7 @@ Developer's guide
 
    guides/template_basics.rst
    guides/code_overview.rst
-   guides/usage.rst
+   guides/advanced_listing.rst
 
 
 Indices and tables
