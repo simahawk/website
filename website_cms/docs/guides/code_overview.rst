@@ -95,13 +95,13 @@ The CMS page model rely on several mixins. Namely:
 ``website.coremetadata.mixin``
     New from `website_cms`. Provides core metadata.
     Exposes core fields:
-        * ``create_date``
-        * ``create_uid``
-        * ``write_date``
-        * ``write_uid``
+    * ``create_date``
+    * ``create_uid``
+    * ``write_date``
+    * ``write_uid``
     Adds extra fields:
-        * ``published_date``
-        * ``published_uid``
+    * ``published_date``
+    * ``published_uid``
 
 ``website.security.mixin``
     New from `website_cms`. Provides per-content security control.
@@ -194,11 +194,14 @@ The CMS media model rely on several mixins. Namely:
 ``website.coremetadata.mixin``
     New from `website_cms`. Provides core metadata.
     Exposes core fields:
+
         * ``create_date``
         * ``create_uid``
         * ``write_date``
         * ``write_uid``
+
     Adds extra fields:
+
         * ``published_date``
         * ``published_uid``
 
