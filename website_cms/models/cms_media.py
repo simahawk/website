@@ -13,6 +13,63 @@ from openerp.addons.website_cms.utils import VIDEO_TYPES
 from openerp.addons.website_cms.utils import AUDIO_TYPES
 from openerp.addons.website_cms.utils import download_image_from_url
 from openerp.addons.website_cms.utils import guess_mimetype
+from openerp.addons.website_cms.utils import AttrDict
+
+import urlparse
+
+
+# XXX: we should move this stuff to website_cms
+# and use services like http://noembed.com
+EMBED_PATTERN = AttrDict({
+    'youtube': AttrDict({
+        'key': 'v',
+        'url': 'https://www.youtube.com/embed/{vid}',
+    }),
+})
+IMAGE_PREVIEW_PATTERN = AttrDict({
+    'youtube': AttrDict({
+        'key': 'v',
+        'url': 'https://i.ytimg.com/vi/{vid}/hqdefault.jpg',
+    }),
+})
+
+
+def to_embed_url(url, provider='youtube'):
+    """Simple function to convert video url to embed url.
+
+    Example:
+
+        >>> to_embed_url('https://www.youtube.com/watch?v=Z5cterm_nW0')
+        https://www.youtube.com/embed/Z5cterm_nW0
+
+    The best would be to make use of services like `oembed`
+    but we are taking this easy at the moment ;)
+    """
+    pattern = EMBED_PATTERN.get(provider)
+    parsed = urlparse.urlparse(url)
+    qstring = urlparse.parse_qs(parsed.query)
+    if pattern and pattern.key in qstring:
+        return pattern.url.format(vid=qstring[pattern.key][0])
+    return url
+
+
+def to_preview_url(url, provider='youtube'):
+    """Simple function to convert video url to image preview url.
+
+    Example:
+
+        >>> to_preview_url('https://www.youtube.com/watch?v=Z5cterm_nW0')
+        https://i.ytimg.com/vi/Z5cterm_nW0/hqdefault.jpg
+
+    The best would be to make use of services like `oembed`
+    but we are taking this easy at the moment ;)
+    """
+    pattern = IMAGE_PREVIEW_PATTERN.get(provider)
+    parsed = urlparse.urlparse(url)
+    qstring = urlparse.parse_qs(parsed.query)
+    if pattern and pattern.key in qstring:
+        return pattern.url.format(vid=qstring[pattern.key][0])
+    return url
 
 
 class CMSMedia(models.Model):
@@ -159,7 +216,7 @@ class CMSMedia(models.Model):
 
     @api.model
     def create(self, vals):
-        """Override to keep link w/ page resource.
+        """Override to keep link w/ page resource and handle url.
 
         `ir.attachment` have a weak relation w/ related resources.
         We want the user to be able to select a page,
@@ -169,6 +226,10 @@ class CMSMedia(models.Model):
         if vals.get('page_id') is not None:
             vals['res_id'] = vals.get('page_id')
             vals['res_model'] = vals.get('page_id') and 'cms.page'
+        # TODO: use noembed service
+        url = vals.get('url')
+        if url and 'youtube' in url:
+            vals['url'] = to_embed_url(url)
         return super(CMSMedia, self).create(vals)
 
     @api.multi
@@ -177,6 +238,10 @@ class CMSMedia(models.Model):
         if vals.get('page_id') is not None:
             vals['res_id'] = vals.get('page_id')
             vals['res_model'] = vals.get('page_id') and 'cms.page'
+        # TODO: use noembed service
+        url = vals.get('url')
+        if url and 'youtube' in url:
+            vals['url'] = to_embed_url(url)
         return super(CMSMedia, self).write(vals)
 
     @api.model
@@ -195,6 +260,28 @@ class CMSMedia(models.Model):
         return self.mimetype in VIDEO_TYPES
 
     # TODO: we should use services like http://noembed.com
+    @api.multi
+    @api.onchange('url', 'datas')
+    def _preload_preview_image(self):
+        """Preload preview image based on url and mimetype."""
+        for item in self:
+            # use _compute_mimetype from ir.attachment
+            # that unfortunately is used only on create
+            values = {}
+            for fname in ('datas_fname', 'url', 'datas'):
+                values[fname] = getattr(item, fname)
+            item.mimetype = self._compute_mimetype(values)
+
+            if item.is_image():
+                if item.url:
+                    image_content = download_image_from_url(item.url)
+                else:
+                    image_content = item.datas
+                item.image = image_content
+            if item.url and 'youtube' in item.url:
+                image_content = download_image_from_url(
+                    to_preview_url(item.url))
+                item.image = image_content
 
 
 class CMSMediaCategory(models.Model):
