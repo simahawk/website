@@ -120,23 +120,11 @@ class CMSRedirect(models.Model):
     name = fields.Char(
         string='Description',
     )
-    source = fields.Reference(
-        string='Resource',
-        selection='_reference_models',
-    )
     status = fields.Selection(
         string='Redirect HTTP Status',
         default=u'301',
         selection='_selection_status',
     )
-
-    @api.model
-    def _reference_models(self):
-        _models = self.env['ir.model'].search([])
-        # limit to cms.page for now
-        return [(model.model, model.name)
-                for model in _models
-                if model.model == 'cms.page']
 
     @api.model
     def _selection_status(self):
