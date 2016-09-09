@@ -18,6 +18,7 @@ Developer's guide
 
    guides/template_basics.rst
    guides/code_overview.rst
+   guides/navigation.rst
    guides/advanced_listing.rst
 
 

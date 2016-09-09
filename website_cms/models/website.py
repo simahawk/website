@@ -23,7 +23,7 @@ class Website(models.Model):
                       published=True):
         """Return pages for navigation.
 
-        Given a `max_detph` build a list containing
+        Given a `max_depth` build a list containing
         a hierarchy of menu and sub menu.
         Only `cms.page` having these flags turned on:
         * `website_published`
