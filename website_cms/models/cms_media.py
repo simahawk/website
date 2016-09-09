@@ -192,7 +192,8 @@ class CMSMedia(models.Model):
         icons for your media.
         """
         # TODO: improve this default
-        return 'file-text'
+        # maybe using the same icon from media category (?)
+        return 'fa fa-file-o'
 
     @api.multi
     def _website_url(self):
