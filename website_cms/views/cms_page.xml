@@ -44,18 +44,23 @@
           <field name="name" colspan="2" />
           <field name="description" colspan="2" />
           <field name="view_id" colspan="1"
-                 options="{'no_open': True, 'no_create': True}"/>
-          <field name="type_id" colspan="1" />
+                 options="{'no_open': True, 'no_create': True}"
+                 attrs="{'invisible': [('redirect_to_id','!=',False)]}" />
+          <field name="type_id" colspan="1"
+                 attrs="{'invisible': [('redirect_to_id','!=',False)]}" />
         </group>
         <group string="Misc" name="main_2" colspan="4">
           <field name="nav_include" colspan="2" />
           <field name="redirect_to_id" colspan="2"
                  context="{'include_path':1, 'default_source': 'cms.page,' + str(active_id)}" />
-          <field name="default_view_item_id" colspan="2" context="{'include_path':1}"/>
+          <field name="default_view_item_id" colspan="2"
+                 context="{'include_path':1}"
+                 attrs="{'invisible': [('redirect_to_id','!=',False)]}" />
         </group>
       </group>
 
-      <group col="8">
+      <group col="8"
+             attrs="{'invisible': [('redirect_to_id','!=',False)]}">
         <group name="children_defaults" colspan="4"
                string="Children defaults">
           <field name="sub_page_type_id" colspan="2"
@@ -65,7 +70,7 @@
         </group>
       </group>
 
-      <notebook>
+      <notebook attrs="{'invisible': [('redirect_to_id','!=',False)]}">
 
         <page name="html-stuff" string="Page content">
           <group name="html">

@@ -17,6 +17,8 @@ We load each field explicitely here for now.
 
     <t t-set="title" t-value="view.form_title" />
 
+    <h2 t-esc="view.form_title" />
+
     <form
       t-att-action="form_action or '/cms/add-page'"
       method="POST"

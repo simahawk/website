@@ -29,7 +29,6 @@
   <field name="model">cms.redirect</field>
   <field name="arch" type="xml">
     <tree string="Redirects">
-      <field name="source" />
       <field name="name" />
       <field name="cms_page_id" />
       <field name="url" />
