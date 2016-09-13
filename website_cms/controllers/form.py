@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 
 import base64
+import json
 
 from openerp import http
 from openerp.http import request
 import werkzeug
-from werkzeug.exceptions import NotFound
+# from werkzeug.exceptions import NotFound
 from openerp.tools.translate import _
 
 
@@ -18,7 +19,7 @@ class PageFormMixin(ContextAwareMixin):
     form_name = ''
     form_title = ''
     form_mode = ''
-    form_fields = ('name', 'description', )
+    form_fields = ('name', 'description', 'tag_ids', )
     form_file_fields = ('image', )
     action_status = 'success'
     status_message_success = ''
@@ -58,27 +59,48 @@ class PageFormMixin(ContextAwareMixin):
         if not main_object:
             return defaults
         for fname in self.form_fields:
-            defaults[fname] = getattr(main_object, fname)
+            value = getattr(main_object, fname)
+            custom_handler = getattr(self, '_load_default_' + fname, None)
+            if custom_handler:
+                value = custom_handler(main_object, value, **kw)
+            defaults[fname] = value
+
         for fname in self.form_file_fields:
             defaults['has_' + fname] = bool(getattr(main_object, fname))
         return defaults
+
+    def _load_default_tag_ids(self, main_object, value, **kw):
+        tags = [dict(id=tag.id, name=tag.name) for tag in value]
+        return json.dumps(tags)
 
     def extract_values(self, request, main_object, **kw):
         """Override to manipulate POST values."""
         # TODO: sanitize user input and add validation!
         errors = []
         values = kw.copy()
-        if 'image' in values:
-            field_value = values.pop('image')
-            if hasattr(field_value, 'read'):
-                image_content = field_value.read()
-                image_content = base64.encodestring(image_content)
-            else:
-                image_content = field_value.split(',')[-1]
-            if values.get('keep_image') != 'yes':
-                # empty or not, we want to replace it
-                values['image'] = image_content
+        for fname, value in values.iteritems():
+            custom_handler = getattr(self, '_extract_' + fname, None)
+            if custom_handler:
+                value = custom_handler(values, errors, **kw)
+            values[fname] = value
         return values, errors
+
+    def _extract_image(self, values, errors, **kw):
+        field_value = values.pop('image')
+        if hasattr(field_value, 'read'):
+            image_content = field_value.read()
+            value = base64.encodestring(image_content)
+        else:
+            value = field_value.split(',')[-1]
+        if values.get('keep_image') != 'yes':
+            return value
+        return None
+
+    def _extract_tag_ids(self, values, errors, **kw):
+        val = values.get('tag_ids')
+        if val:
+            return request.env['cms.tag']._tag_to_write_vals(tags=val)
+        return None
 
     def add_status_message(self, status_message):
         """Inject status message in session."""

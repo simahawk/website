@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 
-import base64
+import json
 
 from openerp import http
 from openerp.http import request
 import werkzeug
 from werkzeug.exceptions import NotFound
-from openerp.tools.translate import _
+# from openerp.tools.translate import _
 
 
 class ContextAwareMixin(object):
@@ -123,3 +123,18 @@ class PageViewController(http.Controller, ContextAwareMixin):
             if request.lang not in main_object.get_translations():
                 raise NotFound
         return self.render(main_object, **kw)
+
+
+class TagsController(http.Controller):
+    """CMS tags controller."""
+
+    @http.route('/cms/get_tags', type='http',
+                auth="public", methods=['GET'], website=True)
+    def tags_search(self, q='', l=25, **post):
+        """Search CMS tags."""
+        data = request.env['cms.tag'].search_read(
+            domain=[('name', '=ilike', (q or '') + "%")],
+            fields=['id', 'name'],
+            limit=int(l),
+        )
+        return json.dumps(data)
