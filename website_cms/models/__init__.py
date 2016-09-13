@@ -11,3 +11,4 @@ from . import ir_ui_view
 from . import ir_attachment
 from . import cms_page
 from . import cms_media
+from . import cms_tag

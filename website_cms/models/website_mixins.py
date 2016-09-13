@@ -140,3 +140,17 @@ class WebsiteCoreMetadataMixin(models.AbstractModel):
             vals['published_date'] = fields.Datetime.now()
             vals['published_uid'] = self.env.user.id
         return super(WebsiteCoreMetadataMixin, self).write(vals)
+
+
+class WebsiteTagMixin(models.AbstractModel):
+    """Base mixin for website tags."""
+
+    _name = 'website.tag.mixin'
+    _description = 'Website tag mixin'
+    _order = 'name'
+
+    name = fields.Char('Name', required=True)
+
+    _sql_constraints = [
+        ('name_uniq', 'unique (name)', "Tag name already exists !"),
+    ]

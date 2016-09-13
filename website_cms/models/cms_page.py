@@ -78,6 +78,13 @@ class CMSPage(models.Model):
         column1='from_id',
         column2='to_id',
     )
+    tag_ids = fields.Many2many(
+        string='Tags',
+        comodel_name='cms.tag',
+        relation='cms_page_related_tag_rel',
+        column1='page_id',
+        column2='tag_id',
+    )
     # XXX 2016-03-30: we are not using this anymore
     # because we can use cms.media since a while.
     # It might be useful for other purposes,
@@ -400,37 +407,35 @@ class CMSPage(models.Model):
     def get_listing(self, published=True,
                     nav=None, types_ids=None,
                     order=None, item=None,
-                    path=None, types_ref=None):
+                    path=None, types_ref=None,
+                    incl_tags=False, tag_ids=None):
         """Return items to be listed.
 
         Tweak filtering by:
 
-        `published` to show published/unpublished items,
-        "website_cms.cms_manager" group bypass this.
-        `nav` to show nav-included items
-        `types_ids` to limit listing to specific page types
-        `types_ref` to limit listing to specific page types
-        by xmlid refs
-        `order` to override ordering by sequence
+        `published` to show published/unpublished items
+            "website_cms.cms_manager" group bypass this;
+        `nav` to show nav-included items;
+        `types_ids` to limit listing to specific page types;
+        `types_ref` to limit listing to specific page types;
+            by xmlid refs
+        `order` to override ordering by sequence;
         `path` to search in a specific path instead of
-        just listing current item's children.
+            just listing current item's children;
+        `incl_tags` to include items related by same tags;
+        `tag_ids` to filter upone specific tags.
 
         By default filter w/ `list_types_ids` if valued.
         """
         item = item or self
-        search_args = []
-        if path is None:
-            search_args.append(('parent_id', '=', item.id))
-        else:
-            search_args.append(('path', '=like', path + '%'))
-
+        base_domain = []
         # use specific `published` items but bypass it if manager
         if published is not None and \
                 not self.env.user.has_group('website_cms.cms_manager'):
-            search_args.append(('website_published', '=', published))
+            base_domain.append(('website_published', '=', published))
 
         if nav is not None:
-            search_args.append(('nav_include', '=', nav))
+            base_domain.append(('nav_include', '=', nav))
 
         if types_ref:
             if isinstance(types_ref, basestring):
@@ -441,14 +446,42 @@ class CMSPage(models.Model):
             item.list_types_ids and item.list_types_ids.ids)
 
         if types_ids:
-            search_args.append(
+            base_domain.append(
                 ('type_id', 'in', types_ids)
             )
+
+        hierarchy_domain = []
+        if path is None:
+            hierarchy_domain.append(('parent_id', '=', item.id))
+        else:
+            hierarchy_domain.append(('path', '=like', path + '%'))
+
+        # handle domain for tags
+        tags_domain = []
+        if incl_tags:
+            # we want to apply the same criterias for all items
+            # so we merge the base domain
+            tag_ids = tag_ids or item.tag_ids.ids
+            tags_domain = [
+                ('tag_ids', 'in', tag_ids),
+            ] + base_domain
+            # plus we exclude the current item
+            # if we are looking up by path
+            if path is None:
+                tags_domain.append(('id', '!=', item.id, ))
+
+        # prepare final domain
+        domain = []
+        if base_domain and tags_domain:
+            domain = ['|', '&', ] + \
+                base_domain + hierarchy_domain + ['&'] + tags_domain
+        elif tags_domain:
+            domain = tags_domain
+        else:
+            domain = base_domain + hierarchy_domain
+
         order = order or 'sequence asc'
-        pages = self.search(
-            search_args,
-            order=order
-        )
+        pages = self.search(domain, order=order)
         return pages
 
     def pager(self, total, page=1, step=10,

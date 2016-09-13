@@ -18,8 +18,9 @@ class TestPage(common.TransactionCase):
     def setUp(self):
         super(TestPage, self).setUp()
         self.model = self.env['cms.page']
-        self.all_pages = []
-        self.page = self.create({
+        self.all_items = {}
+        self.all_pages = self.all_items.setdefault('cms.page', [])
+        self.page = self.create('cms.page', {
             'name': "Test Page",
             'sub_page_type_id': self.news_type.id,
             'website_published': True,
@@ -28,24 +29,26 @@ class TestPage(common.TransactionCase):
         # for sub page loaded w/out context
         # but looks like we cannot retrieve that
         # from parent neither w/ @api.depends
-        self.sub_page = self.create({
+        self.sub_page = self.create('cms.page', {
             'name': "Sub Page",
             'parent_id': self.page.id,
             'website_published': True,
         }, default_type_id=self.page.sub_page_type_id.id)
-        self.subsub_page = self.create({
+        self.subsub_page = self.create('cms.page', {
             'name': 'Sub Sub',
             'parent_id': self.sub_page.id,
             'website_published': True,
         }, default_type_id=self.page.sub_page_type_id.id)
 
     def tearDown(self):
-        self.registry('cms.page').unlink(
-            self.cr, 1, [x.id for x in self.all_pages])
+        for model, items in self.all_items.iteritems():
+            self.registry(model).unlink(
+                self.cr, 1, [x.id for x in items])
 
-    def create(self, values, **context):
-        item = self.model.with_context(**context).create(values)
-        self.all_pages.append(item)
+    def create(self, model, values, **context):
+        ob = self.env[model]
+        item = ob.with_context(**context).create(values)
+        self.all_items.setdefault(model, []).append(item)
         return item
 
     @property
@@ -66,7 +69,7 @@ class TestPage(common.TransactionCase):
             self.sub_page.id in self.page.children_ids._ids)
 
         # published date
-        new = self.create({'name': 'New'})
+        new = self.create('cms.page', {'name': 'New'})
         self.assertTrue(not new.published_date)
         new.website_published = True
         self.assertTrue(new.published_date)
@@ -82,6 +85,11 @@ class TestPage(common.TransactionCase):
 
     def test_hierarchy(self):
         # check hierarchy and paths
+        self.assertEqual(
+            self.subsub_page.hierarchy,
+            [self.page, self.sub_page, ],
+        )
+
         self.assertEqual(
             self.page.id, self.sub_page.parent_id.id)
         self.assertEqual(
@@ -136,7 +144,7 @@ class TestPage(common.TransactionCase):
         self.assertEqual(len(page_listing), 1)
 
         # create a news container
-        container = self.create({
+        container = self.create('cms.page', {
             'name': 'News container',
             'parent_id': self.page.id,
             'sub_page_type_id': self.news_type.id,
@@ -146,7 +154,7 @@ class TestPage(common.TransactionCase):
         news = []
         for i in xrange(1, 6):
             news.append(
-                self.create({
+                self.create('cms.page', {
                     'name': 'News %d' % i,
                     'parent_id': container.id,
                     'type_id': container.sub_page_type_id.id,
@@ -232,6 +240,74 @@ class TestPage(common.TransactionCase):
             types_ids=(self.default_type.id, ))
         self.assertEqual(len(root_listing),
                          len(self.all_pages) - len(all_news))
+
+    def test_listing_with_tags(self):
+        # create some tags
+        tag1 = self.create('cms.tag', {
+            'name': 'Tag 1',
+        })
+        tag2 = self.create('cms.tag', {
+            'name': 'Tag 2',
+        })
+        tag3 = self.create('cms.tag', {
+            'name': 'Tag 3',
+        })
+        # create some other pages and tag them
+        page1 = self.create('cms.page', {
+            'name': 'Page 1',
+            'tag_ids': [
+                (6, False, [tag1.id, tag2.id])
+            ]
+        })
+        page2 = self.create('cms.page', {
+            'name': 'Page 2',
+            'tag_ids': [
+                (6, False, [tag2.id, ])
+            ]
+        })
+        page3 = self.create('cms.page', {
+            'name': 'Page 3',
+            'tag_ids': [
+                (6, False, [tag3.id, ])
+            ]
+        })
+        main1 = self.create('cms.page', {
+            'name': 'Main 1',
+            'tag_ids': [
+                (6, False, [tag1.id, ])
+            ]
+        })
+        main2 = self.create('cms.page', {
+            'name': 'Main 2',
+            'tag_ids': [
+                (6, False, [tag2.id, tag3.id])
+            ]
+        })
+        # check listing including tags
+        # since we are listing straight from the main items
+        # we won't get the items itselves
+        listing = main1.get_listing(incl_tags=1)
+        self.assertEqual(len(listing), 1)
+        self.assertTrue(page1.id in [x.id for x in listing])
+
+        listing = main2.get_listing(incl_tags=1)
+        self.assertEqual(len(listing), 3)
+        self.assertTrue(page1.id in [x.id for x in listing])
+        self.assertTrue(page2.id in [x.id for x in listing])
+        self.assertTrue(page3.id in [x.id for x in listing])
+
+        # if we pass a root path we should get the main items too
+        listing = main1.get_listing(path='/', incl_tags=1)
+        self.assertEqual(len(listing), 2)
+        self.assertTrue(page1.id in [x.id for x in listing])
+        self.assertTrue(main1.id in [x.id for x in listing])
+
+        listing = main2.get_listing(path='/', incl_tags=1)
+        self.assertEqual(len(listing), 4)
+        self.assertTrue(page1.id in [x.id for x in listing])
+        self.assertTrue(page2.id in [x.id for x in listing])
+        self.assertTrue(page3.id in [x.id for x in listing])
+        self.assertTrue(main2.id in [x.id for x in listing])
 
     def test_permissions(self):
         # TODO
