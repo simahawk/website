@@ -267,17 +267,26 @@ class CMSPage(models.Model):
         for item in self:
             item.path = self.build_path(item)
 
+    @property
+    @api.model
+    def hierarchy(self):
+        """Walk trough page hierarchy and get a list of items."""
+        self.ensure_one()
+        if not self.parent_id:
+            return ()
+        current = self
+        parts = []
+        while current.parent_id:
+            parts.insert(0, current.parent_id)
+            current = current.parent_id
+        return parts
+
     @api.model
     def build_path(self, item):
         """Walk trough page hierarchy to build its nested name."""
         if not item.parent_id:
             return '/'
-        current = item
-        parts = []
-        while current.parent_id:
-            parts.insert(0, current.parent_id.name)
-            current = current.parent_id
-        # prefix w/ a slash meaning root
+        parts = [x.name for x in item.hierarchy]
         parts.insert(0, '')
         return '/'.join(parts)
 
