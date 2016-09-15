@@ -458,7 +458,7 @@ class CMSPage(models.Model):
 
         # handle domain for tags
         tags_domain = []
-        if incl_tags:
+        if incl_tags or tag_ids:
             # we want to apply the same criterias for all items
             # so we merge the base domain
             tag_ids = tag_ids or item.tag_ids.ids
@@ -471,12 +471,19 @@ class CMSPage(models.Model):
                 tags_domain.append(('id', '!=', item.id, ))
 
         # prepare final domain
+        # XXX: this could be done better...
         domain = []
-        if base_domain and tags_domain:
-            domain = ['|', '&', ] + \
-                base_domain + hierarchy_domain + ['&'] + tags_domain
-        elif tags_domain:
-            domain = tags_domain
+        if tags_domain:
+            if len(base_domain + hierarchy_domain) > 1:
+                domain = ['|', '&', ] + \
+                    base_domain + hierarchy_domain
+            else:
+                domain = ['|', ] + \
+                    base_domain + hierarchy_domain
+            if len(tags_domain) > 1:
+                domain += ['&'] + tags_domain
+            else:
+                domain += tags_domain
         else:
             domain = base_domain + hierarchy_domain
 

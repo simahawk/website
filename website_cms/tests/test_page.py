@@ -283,31 +283,52 @@ class TestPage(common.TransactionCase):
                 (6, False, [tag2.id, tag3.id])
             ]
         })
+        # sub pages must be included too
+        sub_page1 = self.create('cms.page', {
+            'name': 'Sub Page 1',
+            'parent_id': main1.id,
+        })
+        sub_page2 = self.create('cms.page', {
+            'name': 'Sub Page 2',
+            'parent_id': main2.id,
+        })
         # check listing including tags
         # since we are listing straight from the main items
         # we won't get the items itselves
         listing = main1.get_listing(incl_tags=1)
-        self.assertEqual(len(listing), 1)
-        self.assertTrue(page1.id in [x.id for x in listing])
-
-        listing = main2.get_listing(incl_tags=1)
-        self.assertEqual(len(listing), 3)
-        self.assertTrue(page1.id in [x.id for x in listing])
-        self.assertTrue(page2.id in [x.id for x in listing])
-        self.assertTrue(page3.id in [x.id for x in listing])
-
-        # if we pass a root path we should get the main items too
-        listing = main1.get_listing(path='/', incl_tags=1)
         self.assertEqual(len(listing), 2)
         self.assertTrue(page1.id in [x.id for x in listing])
-        self.assertTrue(main1.id in [x.id for x in listing])
+        self.assertTrue(sub_page1.id in [x.id for x in listing])
 
-        listing = main2.get_listing(path='/', incl_tags=1)
+        listing = main2.get_listing(incl_tags=1)
         self.assertEqual(len(listing), 4)
         self.assertTrue(page1.id in [x.id for x in listing])
         self.assertTrue(page2.id in [x.id for x in listing])
         self.assertTrue(page3.id in [x.id for x in listing])
-        self.assertTrue(main2.id in [x.id for x in listing])
+        self.assertTrue(sub_page2.id in [x.id for x in listing])
+
+        # if we pass a root path we should get the main items too
+        listing = main1.get_listing(path='/', incl_tags=1)
+        self.assertEqual(len(listing), 10)
+        self.assertTrue(page1.id in [x.id for x in listing])
+        self.assertTrue(main1.id in [x.id for x in listing])
+        self.assertTrue(sub_page1.id in [x.id for x in listing])
+        self.assertTrue(sub_page2.id in [x.id for x in listing])
+
+        # if we pass another path path
+        # we should get the main items too if in path
+        subsub_page1 = self.create('cms.page', {
+            'name': 'Sub sub Page 1',
+            'parent_id': sub_page1.id,
+        })
+        listing = main2.get_listing(path=sub_page1.path, tag_ids=[tag1.id, ])
+        self.assertEqual(len(listing), 4)
+        # because of tag 1
+        self.assertTrue(page1.id in [x.id for x in listing])
+        self.assertTrue(main1.id in [x.id for x in listing])
+        # because of path
+        self.assertTrue(sub_page1.id in [x.id for x in listing])
+        self.assertTrue(subsub_page1.id in [x.id for x in listing])
 
     def test_permissions(self):
         # TODO
