@@ -7,7 +7,6 @@
           name="CMS Editor"
           groups="base.group_website_publisher">
     <xpath expr="." position="inside">
-        <script type="text/javascript" src="/website_cms/static/src/js/website_cms.editor.js"></script>
         <script type="text/javascript" src="/website_cms/static/src/js/website_cms.js"></script>
     </xpath>
 </template>

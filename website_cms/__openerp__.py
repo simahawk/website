@@ -34,9 +34,9 @@
         "templates/assets.xml",
         "templates/misc.xml",
         "templates/layout.xml",
-        "templates/actions.xml",
-        "templates/page_view.xml",
-        "templates/sidebar_view.xml",
+        "templates/menu.xml",
+        "templates/page.xml",
+        "templates/sidebar.xml",
         "templates/form.xml",
     ],
     'external_dependencies': {

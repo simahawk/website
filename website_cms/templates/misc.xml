@@ -1,34 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-  <template id="publish_management" inherit_id="website.publish_management">
-
-    <!-- add frontend edit link for cms.page -->
-    <xpath expr="//li[@t-if='publish_edit']" position="replace">
-      <t t-if="publish_edit">
-        <t t-if="object._name == 'cms.page'">
-          <li class="edit edit-frontend">
-              <a t-attf-href="#{object.website_url}/edit-page"
-                 title="Edit">Edit</a>
-          </li>
-        </t>
-        <li class="edit edit-backend">
-            <a t-attf-href="/web#return_label=Website&amp;view_type=form&amp;model=#{object._name}&amp;id=#{object.id}&amp;action=#{action}"
-               title="Edit in backend">Edit in backend</a>
-        </li>
-      </t>
-    </xpath>
-
-  </template>
-
-
   <template id="mgmt_actions" name="Management actions">
     <div class="mgmt-actions" groups="website_cms.cms_manager">
 
       <div id="website_published_button">
         <t t-call="website.publish_management">
           <t t-set="object" t-value="main_object"/>
-          <t t-set="publish_edit" t-value="True"/>
+          <t t-set="publish_edit" t-value="False"/>
           <t t-set="action" t-value="action or ''"/>
         </t>
       </div>

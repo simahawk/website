@@ -7,8 +7,12 @@ from openerp import models
 from openerp import api
 from openerp import tools
 from openerp.addons.web.http import request
+from openerp.addons.website.models.website import unslug
 
 from openerp.addons.website_cms.utils import AttrDict
+
+import urlparse
+import urllib
 
 
 class Website(models.Model):
@@ -179,3 +183,49 @@ class Website(models.Model):
         evaluating `hasattr` or `getattr` in template fails :S
         """
         return hasattr(item, attr)
+
+    def referer_to_page(self):
+        """Translate HTTP REFERER to cms page if possible."""
+        ref = request.httprequest.referrer
+        if not ref:
+            return None
+        parsed = urlparse.urlparse(ref)
+        if '/cms/' in parsed.path:
+            last_bit = parsed.path.split('/')[-1]
+            page_id = unslug(last_bit)[-1]
+            return request.env['cms.page'].browse(page_id)
+        return None
+
+    def cms_add_link(self, main_object=None):
+        """Retrieve add cms page link."""
+        if main_object is not None and main_object._name == 'cms.page':
+            # XXX: avoid adding sub pages inside news.
+            # In the future we might consider controlling this
+            # via cms.page.type configuration
+            news_type = request.env.ref('website_cms.news_page_type')
+            url = '/cms'
+            if main_object.type_id.id != news_type.id:
+                url = main_object.website_url
+            if main_object.parent_id \
+                    and main_object.parent_id.type_id.id != news_type.id:
+                url = main_object.parent_id.website_url
+            return '{}/add-page'.format(url)
+        return ''
+
+    def cms_edit_link(self, main_object=None):
+        """Retrieve edit cms page link."""
+        if main_object is not None and main_object._name == 'cms.page':
+            return '{}/edit-page'.format(main_object.website_url)
+        return ''
+
+    def cms_edit_backend_link(self, main_object=None):
+        """Retrieve edit in backend cms page link."""
+        base = "/web#return_label=Website"
+        data = {
+            'view_type': 'form',
+            'model': main_object._name,
+            'id': main_object.id,
+            'action': self.env.ref('website_cms.action_cms_pages').id
+        }
+        qstring = urllib.urlencode(data)
+        return '{}&{}'.format(base, qstring)
