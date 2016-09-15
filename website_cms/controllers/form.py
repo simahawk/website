@@ -77,29 +77,38 @@ class PageFormMixin(ContextAwareMixin):
         """Override to manipulate POST values."""
         # TODO: sanitize user input and add validation!
         errors = []
-        values = kw.copy()
-        for fname, value in values.iteritems():
+        values = {}
+        valid_fields = self.form_fields + self.form_file_fields
+        form_values = {
+            k: v for k, v in kw.iteritems()
+            if k in valid_fields
+        }
+        for fname in valid_fields:
+            value = form_values.get(fname)
             custom_handler = getattr(self, '_extract_' + fname, None)
             if custom_handler:
-                value = custom_handler(values, errors, **kw)
-            values[fname] = value
+                value = custom_handler(value, errors, form_values)
+            if fname in form_values:
+                # a custom handler could pop a field
+                # to discard it from submission, ie: keep an image as it is
+                values[fname] = value
         return values, errors
 
-    def _extract_image(self, values, errors, **kw):
-        field_value = values.pop('image')
+    def _extract_image(self, field_value, errors, form_values):
+        if form_values.get('keep_image') == 'yes':
+            # prevent discarding image
+            form_values.pop('image')
+            return None
         if hasattr(field_value, 'read'):
             image_content = field_value.read()
             value = base64.encodestring(image_content)
         else:
             value = field_value.split(',')[-1]
-        if values.get('keep_image') != 'yes':
-            return value
-        return None
+        return value
 
-    def _extract_tag_ids(self, values, errors, **kw):
-        val = values.get('tag_ids')
-        if val:
-            return request.env['cms.tag']._tag_to_write_vals(tags=val)
+    def _extract_tag_ids(self, field_value, errors, form_values):
+        if field_value:
+            return request.env['cms.tag']._tag_to_write_vals(tags=field_value)
         return None
 
     def add_status_message(self, status_message):
