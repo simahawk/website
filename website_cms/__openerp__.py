@@ -4,7 +4,7 @@
 {
     "name": "Website CMS",
     "summary": "CMS features",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "category": "Website",
     "website": "https://odoo-community.org/",
     "author": "<AUTHOR(S)>, Odoo Community Association (OCA)",
