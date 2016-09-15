@@ -118,13 +118,13 @@ class PageFormMixin(ContextAwareMixin):
         except KeyError:
             request.session['status_message'] = [status_message, ]
 
-    def before_post_action(self):
+    def before_post_action(self, parent=None, main_object=None, **kw):
         """Perform actions before form handling."""
         # # cleanup status messages
         if 'status_message' in request.session:
             del request.session['status_message']
 
-    def after_post_action(self):
+    def after_post_action(self, parent=None, main_object=None, **kw):
         """Perform actions after form handling."""
         # add status message if any
         status_message = getattr(self,
@@ -181,7 +181,7 @@ class CreatePage(http.Controller, PageFormMixin):
             return self.render(parent, **kw)
 
         elif request.httprequest.method == 'POST':
-            self.before_post_action()
+            self.before_post_action(parent=parent, **kw)
             # handle form submission
             values = self.load_defaults(parent, **kw)
             # TODO: handle errors
@@ -189,22 +189,23 @@ class CreatePage(http.Controller, PageFormMixin):
             values.update(_values)
             new_page = request.env['cms.page'].create(values)
             url = new_page.website_url + '?enable_editor=1'
-            self.after_post_action()
+            self.after_post_action(main_object=new_page, **kw)
             return werkzeug.utils.redirect(url)
 
-    def after_post_action(self):
+    def after_post_action(self, parent=None, main_object=None, **kw):
         """Add extra msg in case description is missing."""
         super(CreatePage, self).after_post_action()
-        msg = {
-            'type': 'warning',
-            'title': 'Note:',
-            'msg': _(u'No description for this page yet. '
-                     u'You see this because you can edit this page. '
-                     u'A brief description can be useful '
-                     u'to show a summary of this content '
-                     u'in many views (like listing or homepage).'),
-        }
-        self.add_status_message(msg)
+        if not main_object.description:
+            msg = {
+                'type': 'warning',
+                'title': 'Note:',
+                'msg': _(u'No description for this page yet. '
+                         u'You see this because you can edit this page. '
+                         u'A brief description can be useful '
+                         u'to show a summary of this content '
+                         u'in many views (like listing or homepage).'),
+            }
+            self.add_status_message(msg)
 
 
 class EditPage(http.Controller, PageFormMixin):
@@ -230,24 +231,25 @@ class EditPage(http.Controller, PageFormMixin):
             # render form
             return self.render(main_object, **kw)
         elif request.httprequest.method == 'POST':
-            self.before_post_action()
+            self.before_post_action(main_object=main_object, **kw)
             # handle form submission
             # TODO: handle errors
             values, errors = self.extract_values(request, main_object, **kw)
             main_object.write(values)
-            self.after_post_action()
+            self.after_post_action(main_object=main_object, **kw)
             return http.local_redirect(main_object.website_url)
 
-    def after_post_action(self):
+    def after_post_action(self, parent=None, main_object=None, **kw):
         """Add extra msg in case description is missing."""
         super(EditPage, self).after_post_action()
-        msg = {
-            'type': 'warning',
-            'title': 'Note:',
-            'msg': _(u'No description for this page yet. '
-                     u'You see this because you can edit this page. '
-                     u'A brief description can be useful '
-                     u'to show a summary of this content '
-                     u'in many views (like listing or homepage).'),
-        }
-        self.add_status_message(msg)
+        if not main_object.description:
+            msg = {
+                'type': 'warning',
+                'title': 'Note:',
+                'msg': _(u'No description for this page yet. '
+                         u'You see this because you can edit this page. '
+                         u'A brief description can be useful '
+                         u'to show a summary of this content '
+                         u'in many views (like listing or homepage).'),
+            }
+            self.add_status_message(msg)
