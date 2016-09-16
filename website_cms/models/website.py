@@ -225,7 +225,8 @@ class Website(models.Model):
             'view_type': 'form',
             'model': main_object._name,
             'id': main_object.id,
-            'action': self.env.ref('website_cms.action_cms_pages').id
         }
+        if main_object._name == 'cms.page':
+            data['action'] = self.env.ref('website_cms.action_cms_pages').id
         qstring = urllib.urlencode(data)
         return '{}&{}'.format(base, qstring)
