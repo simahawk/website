@@ -8,7 +8,7 @@ from openerp.modules.registry import RegistryManager
 
 def get_logger():
     """Return a logger."""
-    name = '[bwi_website.migration]'
+    name = '[website_cms.migration]'
     return logging.getLogger(name)
 
 
