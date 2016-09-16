@@ -1,6 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
+  <template id="website.publish_management">
+
+    <!-- we do not want additional dropdown for cms.page -->
+    <!--
+    this was supposed to work (tested w/ chrome) but looks like odoo does not accept it :S rewrite everything...
+      <xpath expr="//button[contains(@class, 'dropdown-toggle')]/following-sibling::ul" position="replace" />
+    -->
+    <div groups="base.group_website_publisher" t-ignore="true" class="pull-right css_editable_mode_hidden" t-att-style="style or ''">
+        <div t-attf-class="btn-group js_publish_management #{object.website_published and 'css_published' or 'css_unpublished'}"
+             t-att-data-id="object.id" t-att-data-object="object._name" t-att-data-controller="publish_controller">
+            <button class="btn btn-danger js_publish_btn">Not Published</button>
+            <button class="btn btn-success js_publish_btn">Published</button>
+            <t t-if="object and not object._name == 'cms.page'">
+              <button type="button" t-attf-class="btn btn-default dropdown-toggle" t-att-id="'dopprod-%s' % object.id" data-toggle="dropdown">
+                  <span class="caret"></span>
+              </button>
+              <ul class="dropdown-menu" role="menu" t-att-aria-labelledby="'dopprod-%s' % object.id">
+                  <t t-raw="0"/>
+                  <li t-if="publish_edit">
+                      <a t-attf-href="/web#return_label=Website&amp;view_type=form&amp;model=#{object._name}&amp;id=#{object.id}&amp;action=#{action}"
+                      title='Edit in backend'>Edit</a>
+                  </li>
+              </ul>
+            </t>
+        </div>
+    </div>
+  </template>
+
   <template id="mgmt_actions" name="Management actions">
     <div class="mgmt-actions" groups="website_cms.cms_manager">
 
