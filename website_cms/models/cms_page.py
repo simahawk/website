@@ -462,13 +462,14 @@ class CMSPage(models.Model):
             # we want to apply the same criterias for all items
             # so we merge the base domain
             tag_ids = tag_ids or item.tag_ids.ids
-            tags_domain = [
-                ('tag_ids', 'in', tag_ids),
-            ] + base_domain
-            # plus we exclude the current item
-            # if we are looking up by path
-            if path is None:
-                tags_domain.append(('id', '!=', item.id, ))
+            if tag_ids:
+                tags_domain = [
+                    ('tag_ids', 'in', tag_ids),
+                ] + base_domain
+                # plus we exclude the current item
+                # if we are looking up by path
+                if path is None:
+                    tags_domain.append(('id', '!=', item.id, ))
 
         # prepare final domain
         # XXX: this could be done better...
