@@ -30,7 +30,7 @@
   </template>
 
   <template id="mgmt_actions" name="Management actions">
-    <div class="mgmt-actions" groups="website_cms.cms_manager">
+    <div class="mgmt-actions">
 
       <div id="website_published_button">
         <t t-call="website.publish_management">
@@ -40,9 +40,11 @@
         </t>
       </div>
       <t t-if="website.safe_hasattr(main_object, 'view_group_ids') and main_object.view_group_ids">
-        <small class="icon-user group-restrict-info danger help pull-right"
-               style="cursor:help"
-               title="Groups restrictions applied"></small>
+        <small
+          groups="website_cms.cms_manager"
+          class="icon-user group-restrict-info danger help pull-right"
+          style="cursor:help"
+          title="Groups restrictions applied"></small>
       </t>
     </div>
   </template>
