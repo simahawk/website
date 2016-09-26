@@ -18,11 +18,14 @@ odoo.define('website_cms.website_cms', function (require) {
         lastsearch: [],
         createSearchChoice: function (term) {
             if ($(lastsearch).filter(function () { return this.text.localeCompare(term) === 0;}).length === 0) {
-                return {
-                    id: "_" + $.trim(term),
-                    text: $.trim(term) + ' *',
-                    isNew: true,
-                };
+                if ($('input[name="tag_ids"].js_select2').data('can-create')){
+                    // use `data-can-create` attribute to turn on/off tag creation
+                    return {
+                        id: "_" + $.trim(term),
+                        text: $.trim(term) + ' *',
+                        isNew: true,
+                    }
+                }
             }
         },
         formatResult: function(term) {
