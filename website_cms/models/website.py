@@ -206,7 +206,7 @@ class Website(models.Model):
             url = '/cms'
             if main_object.type_id.id != news_type.id:
                 url = main_object.website_url
-            if main_object.parent_id \
+            elif main_object.parent_id \
                     and main_object.parent_id.type_id.id != news_type.id:
                 url = main_object.parent_id.website_url
             return '{}/add-page'.format(url)
