@@ -60,11 +60,26 @@ class ContextAwareMixin(object):
             # get a default item if any
             main_object = main_object.default_view_item_id
 
+        # std check into `ir.ui.view._prepare_qcontext`
+        # editable = request.website.is_publisher()
+        editable = self._can_edit(main_object)
+        lang = request.env.context.get('lang')
+        translatable = editable \
+            and lang != request.website.default_lang_code
+        editable = not translatable and editable
+
         kw.update({
             'main_object': main_object,
             'parent': parent,
+            # override values from std qcontext
+            'editable': editable,
+            'translatable': translatable,
         })
         return kw
+
+    def _can_edit(self, main_object):
+        """Override this to protect the view or the item by raising errors."""
+        return request.website.cms_can_edit(main_object)
 
     def render(self, main_object, **kw):
         """Retrieve parameters for rendering and render view template."""

@@ -6,7 +6,7 @@ import json
 from openerp import http
 from openerp.http import request
 import werkzeug
-# from werkzeug.exceptions import NotFound
+from werkzeug.exceptions import Forbidden
 from openerp.tools.translate import _
 
 
@@ -221,6 +221,11 @@ class EditPage(http.Controller, PageFormMixin):
         'msg': _(u'Page updated.'),
     }
 
+    def _check_security(self, main_object):
+        if request.website and \
+                not request.website.cms_can_edit(main_object):
+            raise Forbidden(_(u'You are not allowed to edit this page!'))
+
     @http.route([
         '/cms/<secure_model("cms.page"):main_object>/edit-page',
         '/cms/<path:path>/<secure_model("cms.page"):main_object>/edit-page',
@@ -231,6 +236,7 @@ class EditPage(http.Controller, PageFormMixin):
             # render form
             return self.render(main_object, **kw)
         elif request.httprequest.method == 'POST':
+            self._check_security(main_object)
             self.before_post_action(main_object=main_object, **kw)
             # handle form submission
             # TODO: handle errors

@@ -196,9 +196,13 @@ class Website(models.Model):
             return request.env['cms.page'].browse(page_id)
         return None
 
+    def is_cms_page(self, obj):
+        """Check if given obj is a cms page."""
+        return obj is not None and getattr(obj, '_name', None) == 'cms.page'
+
     def cms_add_link(self, main_object=None):
         """Retrieve add cms page link."""
-        if main_object is not None and main_object._name == 'cms.page':
+        if self.is_cms_page(main_object):
             # XXX: avoid adding sub pages inside news.
             # In the future we might consider controlling this
             # via cms.page.type configuration
@@ -214,7 +218,7 @@ class Website(models.Model):
 
     def cms_edit_link(self, main_object=None):
         """Retrieve edit cms page link."""
-        if main_object is not None and main_object._name == 'cms.page':
+        if self.is_cms_page(main_object):
             return '{}/edit-page'.format(main_object.website_url)
         return ''
 
@@ -226,7 +230,15 @@ class Website(models.Model):
             'model': main_object._name,
             'id': main_object.id,
         }
-        if main_object._name == 'cms.page':
+        if self.is_cms_page(main_object):
             data['action'] = self.env.ref('website_cms.action_cms_pages').id
         qstring = urllib.urlencode(data)
         return '{}&{}'.format(base, qstring)
+
+    def cms_can_edit(self, main_object=None):
+        """Retrieve edit cms page link."""
+        if self.is_cms_page(main_object):
+            is_manager = self.env.user.has_group('website_cms.cms_manager')
+            is_owner = main_object.create_uid.id == self.env.user.id
+            return is_owner or is_manager
+        return False
