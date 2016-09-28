@@ -30,23 +30,25 @@
   </template>
 
   <template id="mgmt_actions" name="Management actions">
-    <div class="mgmt-actions">
+    <t t-if="not cms_form_mode">
+      <div class="mgmt-actions">
 
-      <div id="website_published_button">
-        <t t-call="website.publish_management">
-          <t t-set="object" t-value="main_object"/>
-          <t t-set="publish_edit" t-value="False"/>
-          <t t-set="action" t-value="action or ''"/>
+        <div id="website_published_button">
+          <t t-call="website.publish_management">
+            <t t-set="object" t-value="main_object"/>
+            <t t-set="publish_edit" t-value="False"/>
+            <t t-set="action" t-value="action or ''"/>
+          </t>
+        </div>
+        <t t-if="website.safe_hasattr(main_object, 'view_group_ids') and main_object.view_group_ids">
+          <small
+            groups="website_cms.cms_manager"
+            class="icon-user group-restrict-info danger help pull-right"
+            style="cursor:help"
+            title="Groups restrictions applied"></small>
         </t>
       </div>
-      <t t-if="website.safe_hasattr(main_object, 'view_group_ids') and main_object.view_group_ids">
-        <small
-          groups="website_cms.cms_manager"
-          class="icon-user group-restrict-info danger help pull-right"
-          style="cursor:help"
-          title="Groups restrictions applied"></small>
-      </t>
-    </div>
+    </t>
   </template>
 
 

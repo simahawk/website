@@ -51,6 +51,7 @@ class PageFormMixin(ContextAwareMixin):
         # values['errors'] = []
         # values['status_message'] = ''
         values['view'] = self
+        values['cms_form_mode'] = self.form_mode
         return values
 
     def load_defaults(self, main_object, **kw):
