@@ -202,19 +202,18 @@ class Website(models.Model):
 
     def cms_add_link(self, main_object=None):
         """Retrieve add cms page link."""
+        # XXX: avoid adding sub pages inside news.
+        # In the future we might consider controlling this
+        # via cms.page.type configuration
+        news_type = request.env.ref('website_cms.news_page_type')
+        url = '/cms'
         if self.is_cms_page(main_object):
-            # XXX: avoid adding sub pages inside news.
-            # In the future we might consider controlling this
-            # via cms.page.type configuration
-            news_type = request.env.ref('website_cms.news_page_type')
-            url = '/cms'
             if main_object.type_id.id != news_type.id:
                 url = main_object.website_url
             elif main_object.parent_id \
                     and main_object.parent_id.type_id.id != news_type.id:
                 url = main_object.parent_id.website_url
-            return '{}/add-page'.format(url)
-        return ''
+        return '{}/add-page'.format(url)
 
     def cms_edit_link(self, main_object=None):
         """Retrieve edit cms page link."""
