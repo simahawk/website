@@ -126,12 +126,30 @@ class TestPage(common.TransactionCase):
         self.assertEqual(self.subsub_page.get_root(upper_level=1),
                          self.sub_page)
 
+    def _is_from_demo(self, page_id):
+        return self.env['ir.model.data'].search_count(
+            [('res_id', '=', page_id),
+             ('model', '=', 'cms.page')])
+
+    def _exclude_demo(self, pagelist):
+        """Exclude items created by demo data.
+
+        External modules can define demo data which
+        we want to exclude. Unfortunately we cannot
+        isolate test contents, so this is our workaround.
+        """
+        return [x for x in pagelist
+                if not self._is_from_demo(x.id)]
+
     def test_get_listing(self):
         # search in root
         root_listing = self.model.get_listing(path='/')
+        # dirty hack to exclude all pages from demo data
+        root_listing = self._exclude_demo(root_listing)
         # all pages must be there
+        all_pages = self._exclude_demo(self.model.search([]))
         self.assertEqual(len(root_listing),
-                         len(self.model.search([])))
+                         len(all_pages))
         for page in self.all_pages:
             self.assertTrue(page in root_listing)
 
@@ -164,6 +182,8 @@ class TestPage(common.TransactionCase):
 
         # check listing
         root_listing = self.page.get_listing(path='/')
+        # dirty hack to exclude all pages from demo data
+        root_listing = self._exclude_demo(root_listing)
         self.assertEqual(len(root_listing), len(self.all_pages))
 
         # if no path provided: get direct children only
@@ -230,6 +250,9 @@ class TestPage(common.TransactionCase):
         root_listing = self.model.get_listing(
             path='/', published=None,
             types_ref='website_cms.news_page_type')
+        # dirty hack to exclude all pages from demo data
+        root_listing = self._exclude_demo(root_listing)
+
         # by type ids
         all_news = self.model.search(
             [('type_id', '=', self.news_type.id)])
@@ -238,6 +261,8 @@ class TestPage(common.TransactionCase):
         root_listing = self.model.get_listing(
             path='/', published=None,
             types_ids=(self.default_type.id, ))
+        # dirty hack to exclude all pages from demo data
+        root_listing = self._exclude_demo(root_listing)
         self.assertEqual(len(root_listing),
                          len(self.all_pages) - len(all_news))
 
@@ -309,6 +334,9 @@ class TestPage(common.TransactionCase):
 
         # if we pass a root path we should get the main items too
         listing = main1.get_listing(path='/', incl_tags=1)
+        # dirty hack to exclude all pages from demo data
+        listing = self._exclude_demo(listing)
+
         self.assertEqual(len(listing), 10)
         self.assertTrue(page1.id in [x.id for x in listing])
         self.assertTrue(main1.id in [x.id for x in listing])
@@ -337,6 +365,8 @@ class TestPage(common.TransactionCase):
     def test_nav(self):
         # this must work also when nav is cached
         website = self.env['website'].search([])[0]
-        self.assertEqual(len(website.get_nav_pages()), 0)
+        nav_pages = self._exclude_demo(website.get_nav_pages())
+        self.assertEqual(len(nav_pages), 0)
         self.page.nav_include = True
-        self.assertEqual(len(website.get_nav_pages()), 1)
+        nav_pages = self._exclude_demo(website.get_nav_pages())
+        self.assertEqual(len(nav_pages), 1)
