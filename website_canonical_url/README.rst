@@ -43,6 +43,7 @@ Contributors
 * Rami Alwafaie <rami.alwafaie@initos.com>
 * Jairo Llopis <jairo.llopis@tecnativa.com>
 * Xavier Brochard <zeroheure@zeroheure.info>
+* Simone Orsi <simone.oris@camptocamp.com>
 
 Maintainer
 ----------
