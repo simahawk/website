@@ -3,15 +3,26 @@
 # Copyright initOS GmbH 2016
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-from odoo import models, api, fields
+from odoo import models, api, fields, exceptions, _
 from odoo.http import request
-from urlparse import urlparse, urlunparse, urljoin
+from urlparse import urlparse, urljoin
 
 
 class Website(models.Model):
     _inherit = 'website'
 
-    canonical_domain = fields.Char()
+    canonical_domain = fields.Char(
+        help='Canonical domain is used to build unique canonical URLs '
+             'to make SEO happy.'
+    )
+
+    @api.constrains('canonical_domain')
+    def _check_canonical_domain(self):
+        domain = self.canonical_domain
+        if domain and not urlparse(domain).scheme:
+            raise exceptions.ValidationError(_(
+                'Canonical domain must contain protocol `http(s)://`'
+            ))
 
     @api.multi
     def get_canonical_url(self, req=None):
